@@ -13,13 +13,15 @@ const NavigationBar = () => {
     const currentPath = location.pathname;
 
     if (currentPath.includes("/home")) {
-      setActiveTab("iScout");
+      setActiveTab("Dashboard");
     } else if (currentPath.includes("/login")) {
       setActiveTab("Login");
     } else if (currentPath.includes("/register")) {
       setActiveTab("register");
     } else if (currentPath.includes("/account")) {
       setActiveTab("Account");
+    } else if (currentPath.includes("/admin/users")) {
+      setActiveTab("Users");
     }
   }, [location]);
 
@@ -48,11 +50,16 @@ const NavigationBar = () => {
                   to={"/admin/home"}
                   className="text-xs font-normal cursor-pointer"
                 >
-                  Home
+                  Dashboard
                 </Link>
-                <div className="text-xs font-normal cursor-pointer">Badges</div>
-                <div className="text-xs font-normal cursor-pointer">Maps</div>
-                <p className="text-xs font-normal cursor-pointer">Jamboree</p>
+                <div className="text-xs font-normal cursor-pointer">Camps</div>
+                <Link
+                  to={"/admin/users"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Users
+                </Link>
+                <p className="text-xs font-normal cursor-pointer">Reports</p>
                 <Link
                   to={"/admin/account"}
                   className="font-normal cursor-pointer"
@@ -70,13 +77,44 @@ const NavigationBar = () => {
               onClick={() => setOpenNav(true)}
             ></i>
           </div>
-          <div className="w-full flex flex-row justify-between items-center p-2">
+          <div className="w-full flex flex-row justify-between items-center space-x-4 p-2">
             <p className="text-md font-semibold">{activeTab}</p>
-            <div className="flex flex-row space-x-4 items-center justify-center">
-              <p className="text-xs font-normal cursor-pointer">About</p>
-              <p className="text-xs font-normal cursor-pointer">Scouts</p>
-              <p className="text-xs font-normal cursor-pointer">Learn More</p>
-            </div>
+            {isAuthenticated === true ? (
+              <div className="flex flex-row space-x-4 items-center justify-center overflow-hidden">
+                <div className="w-full flex flex-row space-x-4 overflow-x-auto scrollbar-hide">
+                  <Link
+                    to={"/scout/badges/explorer"}
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Explorer
+                  </Link>
+                  <Link
+                    to={"/scout/badges/pathfinder"}
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Pathfinder
+                  </Link>
+                  <Link
+                    to={"/scout/badges/outdoorsman"}
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Outdoorsman
+                  </Link>
+                  <Link
+                    to={"/scout/badges/venturer"}
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Venturer
+                  </Link>
+                  <Link
+                    to={"/scout/badges/eagle"}
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Eagle
+                  </Link>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

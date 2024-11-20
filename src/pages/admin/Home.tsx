@@ -1,7 +1,13 @@
 import React from "react";
+import NavigationBar from "../../components/admin/NavigationBar";
 
 const Home = () => {
-  return <div>Home</div>;
+  return (
+    <>
+      <NavigationBar />
+      <div>Home</div>
+    </>
+  );
 };
 
 export default Home;
