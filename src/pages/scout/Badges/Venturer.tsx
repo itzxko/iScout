@@ -17,8 +17,83 @@ import Fishing from "../../../assets/badge/sea-fishing.png";
 import SeaRadio from "../../../assets/badge/sea-radio.png";
 import Man from "../../../assets/VenturerMan.jpg";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const Venturer = () => {
+  const [testDisabled, setTestDisabled] = useState(false);
+
+  useEffect(() => {
+    const checkExamEligibility = async () => {
+      const userRank = localStorage.getItem("userRank");
+      const user = localStorage.getItem("user");
+
+      if (user) {
+        try {
+          const currentUser = JSON.parse(user);
+          console.log(currentUser._id);
+
+          let url = `http://localhost:8080/api/ranks?userId=${currentUser._id}&latestRank=true`;
+
+          let response = await axios.get(url);
+
+          if (response.data.success) {
+            console.log(response.data.alluserRanks);
+            if (
+              response.data.alluserRanks[0].rank === "outdoorsman" &&
+              response.data.alluserRanks[0].status === "approved"
+            ) {
+              checkOutdoorsman(currentUser._id);
+            } else {
+              console.log("di sya venturer");
+              setTestDisabled(true);
+            }
+          }
+        } catch (error: any) {
+          console.log(error);
+        }
+      }
+    };
+    checkExamEligibility();
+  }, []);
+
+  const checkOutdoorsman = async (userId: string) => {
+    try {
+      console.log(userId);
+      let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=outdoorsman`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        if (response.data.status === "passing") {
+          await checkVenturer(userId);
+        } else {
+          setTestDisabled(true);
+        }
+      }
+    } catch (error: any) {
+      setTestDisabled(true);
+    }
+  };
+
+  const checkVenturer = async (userId: string) => {
+    try {
+      console.log(userId);
+      let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=venturer`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        if (response.data.status === "passing") {
+          setTestDisabled(true);
+        } else {
+          setTestDisabled(false);
+        }
+      }
+    } catch (error: any) {
+      setTestDisabled(false);
+    }
+  };
   return (
     <>
       <NavigationBar />
@@ -38,12 +113,14 @@ const Venturer = () => {
             <div className="px-6 py-3 flex items-center justify-center bg-[#006A4E] hover:bg-[#1e7c63] duration-300 text-white rounded-xl cursor-pointer">
               <p className="text-xs font-normal">Tutorial</p>
             </div>
-            <Link
-              to={"/scout/exam/venturer"}
-              className="px-6 py-3 flex items-center justify-center bg-[#292929] hover:bg-[#313131] text-white rounded-xl cursor-pointer"
-            >
-              <p className="text-xs font-normal">Examination</p>
-            </Link>
+            {!testDisabled ? (
+              <Link
+                to={"/scout/exam/venturer"}
+                className="px-6 py-3 flex items-center justify-center bg-[#292929] hover:bg-[#313131] text-white rounded-xl cursor-pointer"
+              >
+                <p className="text-xs font-normal">Examination</p>
+              </Link>
+            ) : null}
           </div>
           <p className="text-xs font-normal text-center max-w-full lg:max-w-[80%]">
             The Venturer rank in scouting is aimed at older scouts who are ready

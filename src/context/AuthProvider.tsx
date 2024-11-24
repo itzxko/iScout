@@ -22,13 +22,22 @@ interface User {
   password: string;
 }
 
+interface userRank {
+  _id: string;
+  userId: string;
+  rank: string;
+  status: string;
+}
+
 // Define the AuthContext type
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  userRank: userRank | null;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setUserRank: React.Dispatch<React.SetStateAction<userRank | null>>;
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
   onLogout: () => void;
 }
@@ -45,6 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRank, setUserRank] = useState<userRank | null>(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -71,6 +81,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const onLogout = async () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("userRank");
     setIsAuthenticated(false);
     navigate("/");
   };
@@ -85,6 +96,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isAuthenticated,
         setIsAuthenticated,
         onLogout,
+        userRank,
+        setUserRank,
       }}
     >
       {children}

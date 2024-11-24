@@ -7,8 +7,85 @@ import Cooking from "../../../assets/badge/Cooking.png";
 import Citizenship from "../../../assets/badge/Citizenshipinthenation.png";
 import Man from "../../../assets/ExplorerMan.jpg";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const Explorer = () => {
+  const [testDisabled, setTestDisabled] = useState(false);
+
+  useEffect(() => {
+    const checkExamEligibility = async () => {
+      const userRank = localStorage.getItem("userRank");
+      const user = localStorage.getItem("user");
+
+      if (user) {
+        try {
+          const currentUser = JSON.parse(user);
+          console.log(currentUser._id);
+
+          let url = `http://localhost:8080/api/ranks?userId=${currentUser._id}&latestRank=true`;
+
+          let response = await axios.get(url);
+
+          if (response.data.success) {
+            console.log(response.data.alluserRanks);
+            if (
+              response.data.alluserRanks[0].rank === "explorer" &&
+              response.data.alluserRanks[0].status === "approved"
+            ) {
+              checkExplorer(currentUser._id);
+            } else {
+              console.log("di sya venturer");
+              setTestDisabled(true);
+            }
+          }
+        } catch (error: any) {
+          console.log(error);
+        }
+      }
+    };
+    checkExamEligibility();
+  }, []);
+
+  const checkExplorer = async (userId: string) => {
+    try {
+      console.log(userId);
+      let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=explorer`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        if (response.data.status === "passing") {
+          // await checkEagle(userId);
+          setTestDisabled(true);
+        } else {
+          setTestDisabled(false);
+        }
+      }
+    } catch (error: any) {
+      setTestDisabled(false);
+    }
+  };
+
+  // const checkEagle = async (userId: string) => {
+  //   try {
+  //     console.log(userId);
+  //     let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=eagle`;
+
+  //     let response = await axios.get(url);
+
+  //     if (response.data.success) {
+  //       if (response.data.status === "passing") {
+  //         setTestDisabled(true);
+  //       } else {
+  //         setTestDisabled(false);
+  //       }
+  //     }
+  //   } catch (error: any) {
+  //     setTestDisabled(false);
+  //   }
+  // };
+
   return (
     <>
       <NavigationBar />
@@ -28,12 +105,14 @@ const Explorer = () => {
             <div className="px-6 py-3 flex items-center justify-center bg-[#006A4E] hover:bg-[#1e7c63] duration-300 text-white rounded-xl cursor-pointer">
               <p className="text-xs font-normal">Tutorial</p>
             </div>
-            <Link
-              to={"/scout/exam/explorer"}
-              className="px-6 py-3 flex items-center justify-center bg-[#292929] hover:bg-[#313131] text-white rounded-xl cursor-pointer"
-            >
-              <p className="text-xs font-normal">Examination</p>
-            </Link>
+            {!testDisabled ? (
+              <Link
+                to={"/scout/exam/explorer"}
+                className="px-6 py-3 flex items-center justify-center bg-[#292929] hover:bg-[#313131] text-white rounded-xl cursor-pointer"
+              >
+                <p className="text-xs font-normal">Examination</p>
+              </Link>
+            ) : null}
           </div>
           <p className="text-xs font-normal text-center max-w-full lg:max-w-[80%]">
             The Senior Scout Explorer rank emphasizes commitment to core Scout

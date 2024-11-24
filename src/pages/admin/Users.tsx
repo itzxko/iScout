@@ -3,12 +3,17 @@ import NavigationBar from "../../components/admin/NavigationBar";
 import { useUsers } from "../../context/UsersProvider";
 import axios from "axios";
 import Modal from "../../components/Modal";
+import EditUser from "../../components/admin/users/EditUser";
+import AddUser from "../../components/admin/users/AddUser";
 
 const Users = () => {
   const { users, getUsers } = useUsers();
   const [visibleModal, setVisibleModal] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [editForm, setEditForm] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [addForm, setAddForm] = useState(false);
 
   useEffect(() => {
     getUsers();
@@ -106,11 +111,19 @@ const Users = () => {
       <NavigationBar />
       <div className="w-full flex min-h-[100svh] flex-col items-center justify-start px-6 font-host-grotesk py-8 bg-[#FCFCFC]">
         <div className="w-full lg:w-3/6 flex flex-col items-center justify-center space-y-6">
-          <div className="w-full flex flex-col items-start justify-center">
-            <p className="text-md font-semibold">Users Overview</p>
-            <p className="text-xs font-normal text-[#999999]">
-              an overview of all the current scouts and leaders
-            </p>
+          <div className="w-full flex flex-row items-center justify-between">
+            <div className="w-3/4 flex flex-col items-start justify-center">
+              <p className="text-md font-semibold">Users Overview</p>
+              <p className="text-xs font-normal text-[#999999]">
+                an overview of all the current scouts and leaders
+              </p>
+            </div>
+            <div
+              className="flex items-center justify-center px-2 py-1 bg-black rounded-full cursor-pointer"
+              onClick={() => setAddForm(true)}
+            >
+              <i className="ri-add-line text-md text-white" />
+            </div>
           </div>
           <div className="w-full flex flex-col items-center justify-center space-y-6">
             {users.map((user: user) => (
@@ -125,7 +138,13 @@ const Users = () => {
                   <div className="w-1/2 flex flex-row items-end justify-end space-x-4">
                     {user.status === "approved" ? (
                       <>
-                        <i className="ri-edit-line text-md cursor-pointer"></i>
+                        <i
+                          className="ri-edit-line text-md cursor-pointer"
+                          onClick={() => {
+                            setEditForm(true);
+                            setSelectedUser(user._id);
+                          }}
+                        ></i>
                         <i
                           className="ri-delete-bin-7-line text-md cursor-pointer"
                           onClick={() => deleteUser(user._id)}
@@ -174,6 +193,23 @@ const Users = () => {
       </div>
       {visibleModal && (
         <Modal onClose={() => setVisibleModal(false)} message={message} />
+      )}
+      {addForm && (
+        <AddUser
+          onClose={() => {
+            setAddForm(false);
+            getUsers();
+          }}
+        />
+      )}
+      {editForm && (
+        <EditUser
+          userId={selectedUser}
+          onClose={() => {
+            setEditForm(false);
+            getUsers();
+          }}
+        />
       )}
     </>
   );

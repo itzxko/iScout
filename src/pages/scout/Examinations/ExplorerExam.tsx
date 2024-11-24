@@ -1,14 +1,47 @@
 import { useEffect, useState } from "react";
 import NavigationBar from "../../../components/scout/NavigationBar";
 import { useQuiz } from "../../../context/QuizProvider";
+import axios from "axios";
+import { useAuth } from "../../../context/AuthProvider";
+import Modal from "../../../components/Modal";
+import { useNavigate } from "react-router-dom";
 
 const ExplorerExam = () => {
   const { explorerQuiz, getExplorerQuiz } = useQuiz();
+  const { user } = useAuth();
   const [answers, setAnswers] = useState<{ [key: string]: string }>({}); // Keys must have a string value
+  const [modal, setModal] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getExplorerQuiz();
+    if (user) {
+      console.log(user);
+    }
   }, []);
+
+  const getResults = async () => {
+    console.log("pwede");
+    try {
+      let url = `http://localhost:8080/api/quiz-attempts?userId=${user?._id}&rank=explorer`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        setModal(true);
+        setMessage(`Status: ${response.data.status}
+          Score: ${response.data.correctAnswers}/${response.data.totalAttempts}
+          `);
+        setError(false);
+      }
+    } catch (error: any) {
+      setError(true);
+      setMessage(error.response.data.error);
+      setModal(true);
+    }
+  };
 
   const handleAnswerSelect = (questionId: string, choice: string) => {
     setAnswers((prev) => {
@@ -22,6 +55,37 @@ const ExplorerExam = () => {
 
       return newAnswers;
     });
+  };
+
+  const submitAnswers = async () => {
+    if (user) {
+      if (explorerQuiz.length === Object.keys(answers).length) {
+        try {
+          const url = `http://localhost:8080/api/quiz-attempts`;
+
+          const promises = Object.entries(answers).map(([questionId, answer]) =>
+            axios.post(url, {
+              userId: user._id,
+              question: questionId,
+              answer: answer,
+            })
+          );
+
+          let response = await Promise.all(promises);
+
+          await getResults();
+        } catch (error: any) {
+          console.log(
+            "Error during submission:",
+            error.response?.data || error.message
+          );
+        }
+      } else {
+        setModal(true);
+        setError(true);
+        setMessage("Answer all Questions");
+      }
+    }
   };
 
   return (
@@ -52,7 +116,10 @@ const ExplorerExam = () => {
                         ? "bg-[#006A4E] text-white"
                         : "bg-[#EBEBEB] hover:bg-[#D4D4D4] duration-300"
                     }`}
-                    onClick={() => handleAnswerSelect(question._id, choice)}
+                    onClick={() => {
+                      handleAnswerSelect(question._id, choice);
+                      console.log(answers);
+                    }}
                   >
                     {choice}
                   </div>
@@ -60,8 +127,27 @@ const ExplorerExam = () => {
               </div>
             </div>
           ))}
+          <div className="w-full flex items-center justify-center">
+            <div
+              className="px-6 py-3 rounded-xl bg-black cursor-pointer"
+              onClick={submitAnswers}
+            >
+              <p className="text-xs font-semibold text-white">Submit</p>
+            </div>
+          </div>
         </div>
       </div>
+      {modal && (
+        <Modal
+          onClose={() => {
+            if (!error) {
+              navigate("/scout/badges/explorer");
+            }
+            setModal(false);
+          }}
+          message={message}
+        />
+      )}
     </>
   );
 };

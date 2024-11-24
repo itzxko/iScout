@@ -52,7 +52,12 @@ const NavigationBar = () => {
                 >
                   Dashboard
                 </Link>
-                <div className="text-xs font-normal cursor-pointer">Camps</div>
+                <Link
+                  to={"/admin/camps"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Camps
+                </Link>
                 <Link
                   to={"/admin/users"}
                   className="text-xs font-normal cursor-pointer"
@@ -83,31 +88,31 @@ const NavigationBar = () => {
               <div className="flex flex-row space-x-4 items-center justify-center overflow-hidden">
                 <div className="w-full flex flex-row space-x-4 overflow-x-auto scrollbar-hide">
                   <Link
-                    to={"/scout/badges/explorer"}
+                    to={"/admin/exam/explorer"}
                     className="text-xs font-normal cursor-pointer"
                   >
                     Explorer
                   </Link>
                   <Link
-                    to={"/scout/badges/pathfinder"}
+                    to={"/admin/exam/pathfinder"}
                     className="text-xs font-normal cursor-pointer"
                   >
                     Pathfinder
                   </Link>
                   <Link
-                    to={"/scout/badges/outdoorsman"}
+                    to={"/admin/exam/outdoorsman"}
                     className="text-xs font-normal cursor-pointer"
                   >
                     Outdoorsman
                   </Link>
                   <Link
-                    to={"/scout/badges/venturer"}
+                    to={"/admin/exam/venturer"}
                     className="text-xs font-normal cursor-pointer"
                   >
                     Venturer
                   </Link>
                   <Link
-                    to={"/scout/badges/eagle"}
+                    to={"/admin/exam/eagle"}
                     className="text-xs font-normal cursor-pointer"
                   >
                     Eagle

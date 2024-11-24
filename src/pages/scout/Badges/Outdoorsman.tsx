@@ -5,8 +5,83 @@ import Swimming from "../../../assets/badge/swimming.png";
 import Emergency from "../../../assets/badge/emergencypreparedness.png";
 import Man from "../../../assets/OutdoorsmanMan.jpg";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const Explorer = () => {
+  const [testDisabled, setTestDisabled] = useState(false);
+
+  useEffect(() => {
+    const checkExamEligibility = async () => {
+      const userRank = localStorage.getItem("userRank");
+      const user = localStorage.getItem("user");
+
+      if (user) {
+        try {
+          const currentUser = JSON.parse(user);
+          console.log(currentUser._id);
+
+          let url = `http://localhost:8080/api/ranks?userId=${currentUser._id}&latestRank=true`;
+
+          let response = await axios.get(url);
+
+          if (response.data.success) {
+            console.log(response.data.alluserRanks);
+            if (
+              response.data.alluserRanks[0].rank === "pathfinder" &&
+              response.data.alluserRanks[0].status === "approved"
+            ) {
+              checkPathfinder(currentUser._id);
+            } else {
+              setTestDisabled(true);
+            }
+          }
+        } catch (error: any) {
+          console.log(error);
+        }
+      }
+    };
+    checkExamEligibility();
+  }, []);
+
+  const checkPathfinder = async (userId: string) => {
+    try {
+      console.log(userId);
+      let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=pathfinder`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        if (response.data.status === "passing") {
+          await checkPathfinder(userId);
+        } else {
+          setTestDisabled(true);
+        }
+      }
+    } catch (error: any) {
+      setTestDisabled(true);
+    }
+  };
+
+  const checkOutdoorsman = async (userId: string) => {
+    try {
+      console.log(userId);
+      let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=outdoorsman`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        if (response.data.status === "passing") {
+          setTestDisabled(true);
+        } else {
+          setTestDisabled(false);
+        }
+      }
+    } catch (error: any) {
+      setTestDisabled(false);
+    }
+  };
+
   return (
     <>
       <NavigationBar />
@@ -26,12 +101,14 @@ const Explorer = () => {
             <div className="px-6 py-3 flex items-center justify-center bg-[#006A4E] hover:bg-[#1e7c63] duration-300 text-white rounded-xl cursor-pointer">
               <p className="text-xs font-normal">Tutorial</p>
             </div>
-            <Link
-              to={"/scout/exam/outdoorsman"}
-              className="px-6 py-3 flex items-center justify-center bg-[#292929] hover:bg-[#313131] text-white rounded-xl cursor-pointer"
-            >
-              <p className="text-xs font-normal">Examination</p>
-            </Link>
+            {!testDisabled ? (
+              <Link
+                to={"/scout/exam/outdoorsman"}
+                className="px-6 py-3 flex items-center justify-center bg-[#292929] hover:bg-[#313131] text-white rounded-xl cursor-pointer"
+              >
+                <p className="text-xs font-normal">Examination</p>
+              </Link>
+            ) : null}
           </div>
           <p className="text-xs font-normal text-center max-w-full lg:max-w-[80%]">
             The Outdoorsman rank in scouting focuses on developing advanced

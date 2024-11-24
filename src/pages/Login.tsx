@@ -16,6 +16,8 @@ const Register = () => {
     user,
     token,
     setUser,
+    setUserRank,
+    userRank,
     setToken,
     isAuthenticated,
     setIsAuthenticated,
@@ -36,6 +38,10 @@ const Register = () => {
         setIsAuthenticated(true);
         setUser(response.data.user);
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem(
+          "userRank",
+          JSON.stringify(response.data.userRank)
+        );
 
         if (response.data.user.userLevel === "superAdmin") {
           navigate("/admin/account");
@@ -43,6 +49,7 @@ const Register = () => {
           navigate("/leader/account");
         } else if (response.data.user.userLevel === "scout") {
           navigate("/scout/account");
+          setUserRank(response.data.userRank);
         }
       }
     } catch (error: any) {

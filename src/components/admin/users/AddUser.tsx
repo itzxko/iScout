@@ -1,15 +1,9 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Modal from "../../Modal";
 
-const EditUser = ({
-  onClose,
-  userId,
-}: {
-  onClose: () => void;
-  userId: string | null;
-}) => {
+const AddUser = ({ onClose }: { onClose: () => void }) => {
   const [level, setLevel] = useState("scout");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -39,40 +33,14 @@ const EditUser = ({
     setPasswordMatch(password === value ? true : false);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (userId) {
-        try {
-          let url = `http://localhost:8080/api/users/${userId}`;
-
-          let response = await axios.get(url);
-
-          if (response.data.success) {
-            setLevel(response.data.user.userLevel);
-            setUsername(response.data.user.name);
-            setPassword(response.data.user.password);
-            setEmail(response.data.user.email);
-            setSchool(response.data.user.additionalDetails.school);
-            setScoutNumber(response.data.user.additionalDetails.scoutNumber);
-            setRank(response.data.user.userRank.rank);
-          }
-        } catch (error: any) {
-          console.log(error);
-        }
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const onUpdate = async () => {
+  const onRegister = async () => {
     setLoading(true);
 
     try {
       if (passwordMatch) {
-        let url = `http://localhost:8080/api/users/${userId}`;
+        let url = "http://localhost:8080/api/users";
 
-        let response = await axios.put(url, {
+        console.log({
           name: username,
           userLevel: level,
           email: email,
@@ -81,7 +49,19 @@ const EditUser = ({
             school: school,
             scoutNumber: scoutNumber,
           },
-          status: "approved",
+          rank: rank,
+        });
+
+        let response = await axios.post(url, {
+          name: username,
+          userLevel: level,
+          email: email,
+          password: password,
+          additionalDetails: {
+            school: school,
+            scoutNumber: scoutNumber,
+          },
+          rank: rank,
         });
 
         if (response.data.success) {
@@ -109,7 +89,7 @@ const EditUser = ({
           <div className="w-full lg:w-2/6 bg-white rounded-xl flex flex-col items-center justify-center space-y-6 p-6">
             <div className="w-full flex flex-row items-center justify-between">
               <div className="w-3/4 flex flex-col items-start justify-center">
-                <p className="text-sm font-semibold">Edit User</p>
+                <p className="text-sm font-semibold">Add User</p>
                 <p className="text-xs font-normal text-[#999999]">
                   fill all fields to continue
                 </p>
@@ -255,9 +235,9 @@ const EditUser = ({
 
               <div
                 className="w-full flex flex-row items-center justify-center bg-gradient-to-tr from-[#699900] to-[#466600] py-3 rounded-xl cursor-pointer"
-                onClick={onUpdate}
+                onClick={onRegister}
               >
-                <p className="text-xs font-normal text-white">Update</p>
+                <p className="text-xs font-normal text-white">Add</p>
               </div>
             </div>
           </div>
@@ -278,4 +258,4 @@ const EditUser = ({
   );
 };
 
-export default EditUser;
+export default AddUser;
