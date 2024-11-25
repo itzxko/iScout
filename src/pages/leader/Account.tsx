@@ -1,5 +1,12 @@
+import NavigationBar from "../../components/leader/NavigationBar";
+
 const Account = () => {
-  return <div>Unit Leader Account</div>;
+  return (
+    <>
+      <NavigationBar />
+      <div>Unit Leader Account</div>
+    </>
+  );
 };
 
 export default Account;

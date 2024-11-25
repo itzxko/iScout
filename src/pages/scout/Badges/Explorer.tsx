@@ -35,8 +35,7 @@ const Explorer = () => {
             ) {
               checkExplorer(currentUser._id);
             } else {
-              console.log("di sya venturer");
-              setTestDisabled(true);
+              setTestDisabled(false);
             }
           }
         } catch (error: any) {
@@ -55,7 +54,7 @@ const Explorer = () => {
       let response = await axios.get(url);
 
       if (response.data.success) {
-        if (response.data.status === "passing") {
+        if (response.data.status === "passed") {
           // await checkEagle(userId);
           setTestDisabled(true);
         } else {

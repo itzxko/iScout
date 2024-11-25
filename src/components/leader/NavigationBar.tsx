@@ -7,7 +7,7 @@ const NavigationBar = () => {
   const [openNav, setOpenNav] = useState(false);
   const [activeTab, setActiveTab] = useState("iScout");
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, onLogout } = useAuth();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -50,15 +50,35 @@ const NavigationBar = () => {
                 >
                   Home
                 </Link>
-                <div className="text-xs font-normal cursor-pointer">Badges</div>
-                <div className="text-xs font-normal cursor-pointer">Maps</div>
-                <p className="text-xs font-normal cursor-pointer">Jamboree</p>
+
+                <Link
+                  to={"/leader/camps"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Camps
+                </Link>
+                <Link
+                  to={"/leader/attendance"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Attendance
+                </Link>
+                <Link
+                  to={"/leader/bor"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  BOR
+                </Link>
                 <Link
                   to={"/leader/account"}
                   className="font-normal cursor-pointer"
                 >
                   <i className="ri-user-3-line text-sm"></i>
                 </Link>
+                <i
+                  className="ri-door-open-line cursor-pointer text-sm"
+                  onClick={onLogout}
+                ></i>
               </div>
             )}
             <i
@@ -108,13 +128,35 @@ const NavigationBar = () => {
               <i className="ri-close-line text-sm"></i>
             </div>
             <div className="w-full flex flex-col items-center justify-center space-y-6">
-              <Link to={"/leader/home"} className="text-xs font-normal">
+              <Link
+                to={"/leader/home"}
+                className="text-xs font-normal cursor-pointer"
+              >
                 Home
               </Link>
-              <p className="text-xs font-normal">Badges</p>
-              <p className="text-xs font-normal">Maps</p>
-              <p className="text-xs font-normal">Jamboree</p>
-              <Link to={"/leader/account"} className="text-xs font-normal">
+
+              <Link
+                to={"/leader/camps"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Camps
+              </Link>
+              <Link
+                to={"/leader/attendance"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Attendance
+              </Link>
+              <Link
+                to={"/leader/bor"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                BOR
+              </Link>
+              <Link
+                to={"/leader/account"}
+                className="text-xs font-normal cursor-pointer"
+              >
                 Account
               </Link>
             </div>

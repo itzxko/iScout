@@ -87,7 +87,7 @@ const Camp = () => {
       <div className="relative w-full h-[100svh] flex font-host-grotesk">
         <div
           className="absolute top-6 left-6 bg-gradient-to-tr from-[#466600] to-[#699900] px-4 py-2 rounded-xl z-[2] cursor-pointer"
-          onClick={() => navigate("/admin/home")}
+          onClick={() => navigate("/leader/home")}
         >
           <p className="text-xs font-semibold text-white">Back</p>
         </div>
@@ -119,27 +119,9 @@ const Camp = () => {
                   {` Date:
                   ${new Date(camp.date).toLocaleDateString()}`}
                 </p>
-                <div className="w-full flex flex-row justify-start items-center space-x-2">
-                  <p
-                    className="text-xs font-semibold cursor-pointer text-[#699900]"
-                    onClick={() => {
-                      setEditCamp(true);
-                      setSelectedCamp(camp._id);
-                    }}
-                  >
-                    Edit
-                  </p>
-                  <p
-                    className="text-xs font-semibold cursor-pointer text-[#6E6E6E]"
-                    onClick={() => deleteCamp(camp._id)}
-                  >
-                    Delete
-                  </p>
-                </div>
               </Popup>
             </Marker>
           ))}
-          <MapClickHandler />
         </MapContainer>
       </div>
       {modal && (

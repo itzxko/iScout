@@ -54,7 +54,12 @@ const NavigationBar = () => {
                 >
                   Login
                 </Link>
-                <p className="text-xs font-normal cursor-pointer">Register</p>
+                <Link
+                  to={"/register"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Register
+                </Link>
               </div>
             ) : (
               <div className="hidden lg:flex flex-row space-x-4 items-center justify-center">

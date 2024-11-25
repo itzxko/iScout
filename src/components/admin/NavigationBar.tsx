@@ -64,7 +64,12 @@ const NavigationBar = () => {
                 >
                   Users
                 </Link>
-                <p className="text-xs font-normal cursor-pointer">Reports</p>
+                <Link
+                  to={"/admin/attendance"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Attendance
+                </Link>
                 <Link
                   to={"/admin/account"}
                   className="font-normal cursor-pointer"
@@ -155,13 +160,34 @@ const NavigationBar = () => {
               <i className="ri-close-line text-sm"></i>
             </div>
             <div className="w-full flex flex-col items-center justify-center space-y-6">
-              <Link to={"/admin/home"} className="text-xs font-normal">
-                Home
+              <Link
+                to={"/admin/home"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Dashboard
               </Link>
-              <p className="text-xs font-normal">Badges</p>
-              <p className="text-xs font-normal">Maps</p>
-              <p className="text-xs font-normal">Jamboree</p>
-              <Link to={"/admin/account"} className="text-xs font-normal">
+              <Link
+                to={"/admin/camps"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Camps
+              </Link>
+              <Link
+                to={"/admin/users"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Users
+              </Link>
+              <Link
+                to={"/admin/attendance"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Attendance
+              </Link>
+              <Link
+                to={"/admin/account"}
+                className="text-xs font-normal cursor-pointer"
+              >
                 Account
               </Link>
             </div>

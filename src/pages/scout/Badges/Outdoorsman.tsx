@@ -52,8 +52,8 @@ const Explorer = () => {
       let response = await axios.get(url);
 
       if (response.data.success) {
-        if (response.data.status === "passing") {
-          await checkPathfinder(userId);
+        if (response.data.status === "passed") {
+          await checkOutdoorsman(userId);
         } else {
           setTestDisabled(true);
         }
@@ -71,7 +71,7 @@ const Explorer = () => {
       let response = await axios.get(url);
 
       if (response.data.success) {
-        if (response.data.status === "passing") {
+        if (response.data.status === "passed") {
           setTestDisabled(true);
         } else {
           setTestDisabled(false);
