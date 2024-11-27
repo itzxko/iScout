@@ -28,11 +28,8 @@ const Pathfinder = () => {
 
           if (response.data.success) {
             console.log(response.data.alluserRanks);
-            if (
-              response.data.alluserRanks[0].rank === "explorer" &&
-              response.data.alluserRanks[0].status === "approved"
-            ) {
-              checkExplorer(currentUser._id);
+            if (response.data.alluserRanks.rank === "pathfinder") {
+              checkPathfinder(currentUser._id);
             } else {
               setTestDisabled(true);
             }
@@ -45,24 +42,24 @@ const Pathfinder = () => {
     checkExamEligibility();
   }, []);
 
-  const checkExplorer = async (userId: string) => {
-    try {
-      console.log(userId);
-      let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=explorer`;
+  // const checkExplorer = async (userId: string) => {
+  //   try {
+  //     console.log(userId);
+  //     let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=explorer`;
 
-      let response = await axios.get(url);
+  //     let response = await axios.get(url);
 
-      if (response.data.success) {
-        if (response.data.status === "passed") {
-          await checkPathfinder(userId);
-        } else {
-          setTestDisabled(true);
-        }
-      }
-    } catch (error: any) {
-      setTestDisabled(true);
-    }
-  };
+  //     if (response.data.success) {
+  //       if (response.data.status === "passed") {
+  //         await checkPathfinder(userId);
+  //       } else {
+  //         setTestDisabled(true);
+  //       }
+  //     }
+  //   } catch (error: any) {
+  //     setTestDisabled(true);
+  //   }
+  // };
 
   const checkPathfinder = async (userId: string) => {
     try {

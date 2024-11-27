@@ -107,7 +107,7 @@ const Register = () => {
             </div>
             <div className="w-full flex flex-col items-center justify-center space-y-4">
               <div className="w-full flex flex-col items-start justify-center space-y-2">
-                <p className="text-xs font-normal">Username</p>
+                <p className="text-xs font-normal">Full Name</p>
                 <input
                   type="text"
                   className="w-full outline-none border-none text-xs font-normal px-4 py-3 bg-[#E8E8E8] rounded-md"

@@ -29,13 +29,10 @@ const Explorer = () => {
 
           if (response.data.success) {
             console.log(response.data.alluserRanks);
-            if (
-              response.data.alluserRanks[0].rank === "explorer" &&
-              response.data.alluserRanks[0].status === "approved"
-            ) {
+            if (response.data.alluserRanks.rank === "explorer") {
               checkExplorer(currentUser._id);
             } else {
-              setTestDisabled(false);
+              setTestDisabled(true);
             }
           }
         } catch (error: any) {
@@ -65,25 +62,6 @@ const Explorer = () => {
       setTestDisabled(false);
     }
   };
-
-  // const checkEagle = async (userId: string) => {
-  //   try {
-  //     console.log(userId);
-  //     let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=eagle`;
-
-  //     let response = await axios.get(url);
-
-  //     if (response.data.success) {
-  //       if (response.data.status === "passing") {
-  //         setTestDisabled(true);
-  //       } else {
-  //         setTestDisabled(false);
-  //       }
-  //     }
-  //   } catch (error: any) {
-  //     setTestDisabled(false);
-  //   }
-  // };
 
   return (
     <>

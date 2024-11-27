@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAttendance } from "../../../context/AttendanceProvider";
+import axios from "axios";
 
 const AttendanceForm = ({
   onClose,
@@ -8,16 +9,27 @@ const AttendanceForm = ({
   onClose: () => void;
   campId: string | null;
 }) => {
-  const { attendance, getCampAttendance } = useAttendance();
+  const [attendance, setAttendance] = useState([]);
+
+  const getCampAttendance = async () => {
+    if (campId) {
+      try {
+        let url = `http://localhost:8080/api/camp-attendance?campId=${campId}`;
+
+        let response = await axios.get(url);
+
+        if (response.data.success) {
+          setAttendance(response.data.allCampAttendance);
+        }
+      } catch (error: any) {
+        console.log(error);
+      }
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      await getCampAttendance(campId);
-    };
-
-    fetchData();
-    console.log(attendance);
-  }, [campId, getCampAttendance]);
+    getCampAttendance();
+  }, []);
 
   return (
     <>
@@ -42,7 +54,7 @@ const AttendanceForm = ({
               .map((user: any) => (
                 <div
                   className="w-full flex flex-row items-center justify-between bg-[#EBEBEB] p-4 rounded-xl mb-2 shadow"
-                  key={user._id}
+                  key={user.userId}
                 >
                   <div>
                     <p className="text-xs font-semibold uppercase">

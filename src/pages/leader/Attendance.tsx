@@ -21,9 +21,19 @@ const Attendance = () => {
   const { camps, getAllCamps } = useCamps();
   const [attendanceForm, setAttendanceForm] = useState(false);
   const [selectedCamp, setSelectedCamp] = useState("");
+  const [school, setSchool] = useState("");
 
   useEffect(() => {
+    const getSchool = async () => {
+      const user = localStorage.getItem("user");
+      if (user) {
+        const currentUser = JSON.parse(user);
+        setSchool(currentUser.additionalDetails.school);
+      }
+    };
+
     getAllCamps();
+    getSchool();
   }, []);
 
   return (
@@ -46,14 +56,16 @@ const Attendance = () => {
                 <p className="w-1/2 truncate text-xs font-normal uppercase text-[#999999]">
                   #{camp._id}
                 </p>
-                <div
-                  className="w-flex px-4 py-2 rounded-xl bg-gradient-to-tr from-[#466600] to-[#699900] cursor-pointer"
-                  onClick={() => {
-                    setAttendanceForm(true);
-                    setSelectedCamp(camp._id);
-                  }}
-                >
-                  <p className="text-xs font-normal text-white">Attendees</p>
+                <div className="flex flex-row items-center justify-center space-x-2">
+                  <div
+                    className="w-flex px-4 py-2 rounded-xl bg-gradient-to-tr from-[#466600] to-[#699900] cursor-pointer"
+                    onClick={() => {
+                      setAttendanceForm(true);
+                      setSelectedCamp(camp._id);
+                    }}
+                  >
+                    <p className="text-xs font-normal text-white">Attendees</p>
+                  </div>
                 </div>
               </div>
               <div className="w-full flex flex-row justify-between items-center">
@@ -81,6 +93,7 @@ const Attendance = () => {
       </div>
       {attendanceForm && (
         <AttendanceForm
+          school={school}
           campId={selectedCamp}
           onClose={() => setAttendanceForm(false)}
         />

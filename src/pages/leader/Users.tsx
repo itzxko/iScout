@@ -1,40 +1,65 @@
-import { useEffect, useState } from "react";
-import NavigationBar from "../../components/admin/NavigationBar";
-import { useUsers } from "../../context/UsersProvider";
+import React, { useEffect, useState } from "react";
+import NavigationBar from "../../components/leader/NavigationBar";
 import axios from "axios";
 import Modal from "../../components/Modal";
-import EditUser from "../../components/admin/users/EditUser";
-import AddUser from "../../components/admin/users/AddUser";
+import EditUser from "../../components/leader/users/EditUser";
+import AddUser from "../../components/leader/users/AddUser";
+
+interface user {
+  additionalDetails: {
+    school: string;
+    scoutNumber: string;
+    dateOfMembership: Date;
+  };
+  _id: string;
+  name: string;
+  userLevel: string;
+  email: string;
+  password: string;
+  status: string;
+  image: string;
+}
 
 const Users = () => {
-  const { users, getApprovedUsers } = useUsers();
-  const [visibleModal, setVisibleModal] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
+  const [school, setSchool] = useState("");
+  const [users, setUsers] = useState([]);
   const [editForm, setEditForm] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [addForm, setAddForm] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [levelFilter, setLevelFilter] = useState("scout");
+  const [selectedUser, setSelectedUser] = useState("");
+  const [modal, setModal] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    getApprovedUsers(searchText, levelFilter);
-  }, [searchText, levelFilter]);
+  const getSchool = async () => {
+    try {
+      let user = localStorage.getItem("user");
 
-  interface user {
-    additionalDetails: {
-      school: string;
-      scoutNumber: string;
-      dateOfMembership: Date;
-    };
-    _id: string;
-    name: string;
-    userLevel: string;
-    email: string;
-    password: string;
-    status: string;
-    image: string;
-  }
+      if (user) {
+        let currentUser = JSON.parse(user);
+
+        setSchool(currentUser.additionalDetails.school);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const getUsers = async () => {
+    if (school !== "") {
+      try {
+        let url = `http://localhost:8080/api/users?userLevel=scout&school=${school}`;
+
+        let response = await axios.get(url);
+
+        if (response.data.success) {
+          setUsers(response.data.users);
+        }
+      } catch (error: any) {
+        console.log(error);
+        setUsers([]);
+      }
+    }
+  };
 
   const deleteUser = async (userId: string) => {
     try {
@@ -43,8 +68,8 @@ const Users = () => {
       let response = await axios.delete(url);
 
       if (response.data.success) {
-        getApprovedUsers();
-        setVisibleModal(true);
+        getUsers();
+        setModal(true);
         setMessage(response.data.success);
       }
     } catch (error: any) {
@@ -52,37 +77,20 @@ const Users = () => {
     }
   };
 
-  const handleFilter = () => {
-    if (levelFilter === "scout") {
-      setLevelFilter("unitLeader");
-    } else if (levelFilter === "unitLeader") {
-      setLevelFilter("scout");
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      await getSchool();
+      await getUsers();
+    };
+
+    fetchData();
+  }, [school]);
 
   return (
     <>
       <NavigationBar />
       <div className="w-full flex min-h-[100svh] flex-col items-center justify-start px-6 font-host-grotesk py-8 bg-[#FCFCFC]">
         <div className="w-full lg:w-3/6 flex flex-col items-center justify-center space-y-6">
-          <div className="w-full flex flex-row items-center justify-between bg-[#EDEDED] pl-6 pr-4 py-3 rounded-full space-x-2">
-            <input
-              type="text"
-              className="text-xs font-normal outline-none bg-[#EDEDED] w-full"
-              placeholder="search scouts using school name"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <div className="flex flex-row space-x-2 items-center justify-center px-4 py-1.5 bg-[#050301] rounded-full">
-              <p className="text-xs font-normal text-white truncate">
-                {levelFilter === "unitLeader" ? "unit leader" : levelFilter}
-              </p>
-              <i
-                className="ri-refresh-line text-sm font-normal text-white cursor-pointer"
-                onClick={handleFilter}
-              ></i>
-            </div>
-          </div>
           <div className="w-full flex flex-row items-center justify-between">
             <div className="w-3/4 flex flex-col items-start justify-center">
               <p className="text-md font-semibold">Users Overview</p>
@@ -148,14 +156,12 @@ const Users = () => {
           </div>
         </div>
       </div>
-      {visibleModal && (
-        <Modal onClose={() => setVisibleModal(false)} message={message} />
-      )}
       {addForm && (
         <AddUser
+          schoolName={school}
           onClose={() => {
+            getUsers();
             setAddForm(false);
-            getApprovedUsers();
           }}
         />
       )}
@@ -164,7 +170,15 @@ const Users = () => {
           userId={selectedUser}
           onClose={() => {
             setEditForm(false);
-            getApprovedUsers();
+            getUsers();
+          }}
+        />
+      )}
+      {modal && (
+        <Modal
+          message={message}
+          onClose={() => {
+            setModal(false);
           }}
         />
       )}

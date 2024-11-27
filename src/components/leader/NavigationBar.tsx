@@ -58,6 +58,12 @@ const NavigationBar = () => {
                   Camps
                 </Link>
                 <Link
+                  to={"/leader/users"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Users
+                </Link>
+                <Link
                   to={"/leader/attendance"}
                   className="text-xs font-normal cursor-pointer"
                 >
@@ -134,12 +140,17 @@ const NavigationBar = () => {
               >
                 Home
               </Link>
-
               <Link
                 to={"/leader/camps"}
                 className="text-xs font-normal cursor-pointer"
               >
                 Camps
+              </Link>
+              <Link
+                to={"/leader/users"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Users
               </Link>
               <Link
                 to={"/leader/attendance"}

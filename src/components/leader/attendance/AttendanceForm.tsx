@@ -1,22 +1,55 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAttendance } from "../../../context/AttendanceProvider";
+import { useSVGOverlay } from "react-leaflet/SVGOverlay";
+import axios from "axios";
+import EditForm from "./EditForm";
+import AddForm from "./AddForm";
 
 const AttendanceForm = ({
   onClose,
   campId,
+  school,
 }: {
   onClose: () => void;
   campId: string | null;
+  school: string | null;
 }) => {
-  const { attendance, getCampAttendance } = useAttendance();
+  const [attendance, setAttendance] = useState([]);
+  const [addForm, setAddForm] = useState(false);
+  const [editForm, setEditForm] = useState(false);
+  const [data, setData] = useState([]);
+  const [selectedCamp, setSelectedCamp] = useState("");
+  const [attendanceId, setAttendanceId] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      await getCampAttendance(campId);
-    };
+    getAttendance();
+  }, []);
 
-    fetchData();
-  }, [campId, getCampAttendance]);
+  const getAttendance = async () => {
+    try {
+      let url = `http://localhost:8080/api/camp-attendance?campId=${campId}&school=${school}`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        const transformedUsers = response.data.allCampAttendance.flatMap(
+          (item: any) =>
+            item.users.map((user: any) => ({
+              userId: user.userId,
+              isLeader: user.isLeader,
+              status: "pending", // Set the status to "pending"
+            }))
+        );
+
+        setData(transformedUsers);
+        setSelectedCamp(response.data.allCampAttendance[0].campId);
+        setAttendanceId(response.data.allCampAttendance[0]._id);
+        setAttendance(response.data.allCampAttendance[0].users);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -36,29 +69,71 @@ const AttendanceForm = ({
               </div>
             </div>
 
-            {attendance
-              .flatMap((attendee: any) => attendee.users)
-              .map((user: any) => (
-                <div
-                  className="w-full flex flex-row items-center justify-between bg-[#EBEBEB] p-4 rounded-xl mb-2 shadow"
-                  key={user._id}
-                >
-                  <div>
-                    <p className="text-xs font-semibold uppercase">
-                      User ID: #{user.userId}
-                    </p>
-                    <p className="text-xs font-normal text-[#6E6E6E]">
-                      Status: {user.status}
-                    </p>
-                    <p className="text-xs font-normal text-[#6E6E6E]">
-                      Leader: {user.isLeader ? "Yes" : "No"}
-                    </p>
-                  </div>
+            {attendance.map((user: any) => (
+              <div
+                className="w-full flex flex-row items-center justify-between bg-[#EBEBEB] p-4 rounded-xl mb-2 shadow"
+                key={user.userId}
+              >
+                <div>
+                  <p className="text-xs font-semibold uppercase">
+                    {user.userDetails.name}
+                  </p>
+                  <p className="text-xs font-normal text-[#6E6E6E]">
+                    Status: {user.status}
+                  </p>
+                  <p className="text-xs font-normal text-[#6E6E6E]">
+                    Leader: {user.isLeader ? "Yes" : "No"}
+                  </p>{" "}
+                  <p className="text-xs font-normal text-[#6E6E6E]">
+                    School: {user.userDetails.additionalDetails.school}
+                  </p>
                 </div>
-              ))}
+              </div>
+            ))}
+            {attendance.length > 0 ? (
+              <div
+                className="w-full bg-gradient-to-tr from-[#466600] to-[#699900] py-3 rounded-xl flex items-center justify-center cursor-pointer"
+                onClick={() => {
+                  setEditForm(true);
+                }}
+              >
+                <p className="text-white text-xs font-normal">Edit</p>
+              </div>
+            ) : (
+              <div
+                className="w-full bg-gradient-to-tr from-[#466600] to-[#699900] py-3 rounded-xl flex items-center justify-center cursor-pointer"
+                onClick={() => {
+                  setAddForm(true);
+                }}
+              >
+                <p className="text-white text-xs font-normal">Add</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+      {addForm && (
+        <AddForm
+          campId={campId}
+          school={school}
+          onClose={() => {
+            setAddForm(false);
+            onClose();
+          }}
+        />
+      )}
+      {editForm && (
+        <EditForm
+          school={school}
+          campId={selectedCamp}
+          attendanceId={attendanceId}
+          data={data}
+          onClose={() => {
+            setEditForm(false);
+            onClose();
+          }}
+        />
+      )}
     </>
   );
 };

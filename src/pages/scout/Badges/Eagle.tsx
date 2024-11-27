@@ -32,11 +32,8 @@ const Eagle = () => {
 
           if (response.data.success) {
             console.log(response.data.alluserRanks);
-            if (
-              response.data.alluserRanks[0].rank === "venturer" &&
-              response.data.alluserRanks[0].status === "approved"
-            ) {
-              checkVenturer(currentUser._id);
+            if (response.data.alluserRanks.rank === "eagle") {
+              checkEagle(currentUser._id);
             } else {
               console.log("di sya venturer");
               setTestDisabled(true);
@@ -50,24 +47,24 @@ const Eagle = () => {
     checkExamEligibility();
   }, []);
 
-  const checkVenturer = async (userId: string) => {
-    try {
-      console.log(userId);
-      let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=venturer`;
+  // const checkVenturer = async (userId: string) => {
+  //   try {
+  //     console.log(userId);
+  //     let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=venturer`;
 
-      let response = await axios.get(url);
+  //     let response = await axios.get(url);
 
-      if (response.data.success) {
-        if (response.data.status === "passed") {
-          await checkEagle(userId);
-        } else {
-          setTestDisabled(true);
-        }
-      }
-    } catch (error: any) {
-      setTestDisabled(true);
-    }
-  };
+  //     if (response.data.success) {
+  //       if (response.data.status === "passed") {
+  //         await checkEagle(userId);
+  //       } else {
+  //         setTestDisabled(true);
+  //       }
+  //     }
+  //   } catch (error: any) {
+  //     setTestDisabled(true);
+  //   }
+  // };
 
   const checkEagle = async (userId: string) => {
     try {

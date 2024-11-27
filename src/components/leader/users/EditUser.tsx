@@ -138,6 +138,7 @@ const EditUser = ({
                   placeholder="school"
                   value={school}
                   onChange={(e) => setSchool(e.target.value)}
+                  readOnly={true}
                 />
               </div>
               <div className="w-full flex flex-col items-start justify-center space-y-2">
@@ -216,7 +217,7 @@ const EditUser = ({
                 <p className="text-xs font-normal">Level</p>
                 <div
                   className="w-full flex flex-row justify-between items-center px-4 py-3 bg-[#E8E8E8] rounded-md cursor-pointer"
-                  onClick={() => setOpenLevel(!openLevel)}
+                  // onClick={() => setOpenLevel(!openLevel)}
                 >
                   <p className="text-xs font-normal">
                     {level === "superAdmin"

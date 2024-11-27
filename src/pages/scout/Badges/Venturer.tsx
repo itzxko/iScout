@@ -39,11 +39,8 @@ const Venturer = () => {
 
           if (response.data.success) {
             console.log(response.data.alluserRanks);
-            if (
-              response.data.alluserRanks[0].rank === "outdoorsman" &&
-              response.data.alluserRanks[0].status === "approved"
-            ) {
-              checkOutdoorsman(currentUser._id);
+            if (response.data.alluserRanks.rank === "outdoorsman") {
+              checkVenturer(currentUser._id);
             } else {
               console.log("di sya venturer");
               setTestDisabled(true);
@@ -57,24 +54,24 @@ const Venturer = () => {
     checkExamEligibility();
   }, []);
 
-  const checkOutdoorsman = async (userId: string) => {
-    try {
-      console.log(userId);
-      let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=outdoorsman`;
+  // const checkOutdoorsman = async (userId: string) => {
+  //   try {
+  //     console.log(userId);
+  //     let url = `http://localhost:8080/api/quiz-attempts?userId=${userId}&rank=outdoorsman`;
 
-      let response = await axios.get(url);
+  //     let response = await axios.get(url);
 
-      if (response.data.success) {
-        if (response.data.status === "passed") {
-          await checkVenturer(userId);
-        } else {
-          setTestDisabled(true);
-        }
-      }
-    } catch (error: any) {
-      setTestDisabled(true);
-    }
-  };
+  //     if (response.data.success) {
+  //       if (response.data.status === "passed") {
+  //         await checkVenturer(userId);
+  //       } else {
+  //         setTestDisabled(true);
+  //       }
+  //     }
+  //   } catch (error: any) {
+  //     setTestDisabled(true);
+  //   }
+  // };
 
   const checkVenturer = async (userId: string) => {
     try {

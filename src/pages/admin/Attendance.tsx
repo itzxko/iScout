@@ -3,6 +3,8 @@ import NavigationBar from "../../components/admin/NavigationBar";
 import { useCamps } from "../../context/CampsProvider";
 import { useAttendance } from "../../context/AttendanceProvider";
 import AttendanceForm from "../../components/admin/attendance/AttendanceForm";
+import UpdateForm from "../../components/admin/attendance/UpdateForm";
+import ChooseSchool from "../../components/admin/attendance/ChooseSchool";
 
 interface Camp {
   location: {
@@ -18,13 +20,13 @@ interface Camp {
 }
 
 const Attendance = () => {
-  const { camps, getAllCamps } = useCamps();
+  const { camps, getAllCamps, campIds } = useCamps();
   const [attendanceForm, setAttendanceForm] = useState(false);
+  const [chooseSchool, setChooseSchool] = useState(false);
   const [selectedCamp, setSelectedCamp] = useState("");
 
   useEffect(() => {
     getAllCamps();
-    console.log(camps);
   }, []);
 
   return (
@@ -47,14 +49,25 @@ const Attendance = () => {
                 <p className="w-1/2 truncate text-xs font-normal uppercase text-[#999999]">
                   #{camp._id}
                 </p>
-                <div
-                  className="w-flex px-4 py-2 rounded-xl bg-gradient-to-tr from-[#466600] to-[#699900] cursor-pointer"
-                  onClick={() => {
-                    setAttendanceForm(true);
-                    setSelectedCamp(camp._id);
-                  }}
-                >
-                  <p className="text-xs font-normal text-white">Attendees</p>
+                <div className="flex flex-row items-center justify-center space-x-2">
+                  <div
+                    className="px-4 py-2 rounded-xl bg-gradient-to-tr from-[#466600] to-[#699900] cursor-pointer"
+                    onClick={() => {
+                      setChooseSchool(true);
+                      setSelectedCamp(camp._id);
+                    }}
+                  >
+                    <p className="text-xs font-normal text-white">Update</p>
+                  </div>
+                  <div
+                    className="w-flex px-4 py-2 rounded-xl bg-gradient-to-tr from-[#466600] to-[#699900] cursor-pointer"
+                    onClick={() => {
+                      setAttendanceForm(true);
+                      setSelectedCamp(camp._id);
+                    }}
+                  >
+                    <p className="text-xs font-normal text-white">Attendees</p>
+                  </div>
                 </div>
               </div>
               <div className="w-full flex flex-row justify-between items-center">
@@ -84,6 +97,12 @@ const Attendance = () => {
         <AttendanceForm
           campId={selectedCamp}
           onClose={() => setAttendanceForm(false)}
+        />
+      )}
+      {chooseSchool && (
+        <ChooseSchool
+          campId={selectedCamp}
+          onClose={() => setChooseSchool(false)}
         />
       )}
     </>

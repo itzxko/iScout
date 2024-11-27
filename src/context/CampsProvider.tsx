@@ -5,6 +5,7 @@ const CampContext = createContext<any>(null);
 
 export const CampsProvider = ({ children }: any) => {
   const [camps, setCamps] = useState([]);
+  const [campIds, setCampIds] = useState([]);
 
   const getAllCamps = async () => {
     try {
@@ -14,6 +15,8 @@ export const CampsProvider = ({ children }: any) => {
 
       if (response.data.success) {
         setCamps(response.data.allCamps);
+        const campId = response.data.allCamps.map((camp: any) => camp._id);
+        setCampIds(campId);
       }
     } catch (error: any) {
       console.log(error);

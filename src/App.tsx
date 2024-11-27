@@ -23,7 +23,6 @@ import EagleExam from "./pages/scout/Examinations/EagleExam";
 import { RankProvider } from "./context/RankProvider";
 import AdminUsers from "./pages/admin/Users";
 import { UsersProvider } from "./context/UsersProvider";
-import Users from "./pages/admin/Users";
 import AdminExplorer from "./pages/admin/Examination/Explorer";
 import AdminEagle from "./pages/admin/Examination/Eagle";
 import AdminOutdoorsman from "./pages/admin/Examination/Outdoorsman";
@@ -36,6 +35,8 @@ import { AttendanceProvider } from "./context/AttendanceProvider";
 import LeaderCamp from "./pages/leader/Camp";
 import LeaderAttendance from "./pages/leader/Attendance";
 import LeaderBOR from "./pages/leader/BOR";
+import AdminApprovals from "./pages/admin/Approvals";
+import LeaderUsers from "./pages/leader/Users";
 
 const App = () => {
   return (
@@ -56,6 +57,10 @@ const App = () => {
                     <Route path="/admin/home" element={<AdminHome />} />
                     <Route path="/admin/camps" element={<AdminCamp />} />
                     <Route path="/admin/users" element={<AdminUsers />} />
+                    <Route
+                      path="/admin/approvals"
+                      element={<AdminApprovals />}
+                    />
                     <Route
                       path="/admin/attendance"
                       element={<AdminAttendance />}
@@ -128,6 +133,7 @@ const App = () => {
                     />
                     <Route path="/leader/camps" element={<LeaderCamp />} />
                     <Route path="/leader/bor" element={<LeaderBOR />} />
+                    <Route path="/leader/users" element={<LeaderUsers />} />
                   </Routes>
                 </QuizProvider>
               </CampsProvider>
