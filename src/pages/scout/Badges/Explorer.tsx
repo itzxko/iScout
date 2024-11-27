@@ -29,8 +29,10 @@ const Explorer = () => {
 
           if (response.data.success) {
             console.log(response.data.alluserRanks);
-            if (response.data.alluserRanks.rank === "explorer") {
+            if (response.data.alluserRanks.rank == "explorer") {
               checkExplorer(currentUser._id);
+            } else if (response.data.alluserRanks === "unranked") {
+              setTestDisabled(false);
             } else {
               setTestDisabled(true);
             }
