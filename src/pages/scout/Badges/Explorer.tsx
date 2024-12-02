@@ -9,13 +9,20 @@ import Man from "../../../assets/ExplorerMan.jpg";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import CitizenshipModal from "../../../components/badges/Explorer/CitizenshipModal";
+import FitnessModal from "../../../components/badges/Explorer/FitnessModal";
+import CookingModal from "../../../components/badges/Explorer/CookingModal";
+import RopeworkModal from "../../../components/badges/Explorer/RopeworkModal";
 
 const Explorer = () => {
   const [testDisabled, setTestDisabled] = useState(false);
+  const [citizenshipModal, setCitizenshipModal] = useState(false);
+  const [fitnessModal, setFitnessModal] = useState(false);
+  const [cookingModal, setCookingModal] = useState(false);
+  const [ropeworkModal, setRopeworkModal] = useState(false);
 
   useEffect(() => {
     const checkExamEligibility = async () => {
-      const userRank = localStorage.getItem("userRank");
       const user = localStorage.getItem("user");
 
       if (user) {
@@ -81,9 +88,6 @@ const Explorer = () => {
             <p className="text-xs font-normal text-[#999999]">Scouting</p>
           </div>
           <div className="w-full flex flex-row items-center justify-center space-x-2">
-            <div className="px-6 py-3 flex items-center justify-center bg-[#006A4E] hover:bg-[#1e7c63] duration-300 text-white rounded-xl cursor-pointer">
-              <p className="text-xs font-normal">Tutorial</p>
-            </div>
             {!testDisabled ? (
               <Link
                 to={"/scout/exam/explorer"}
@@ -112,7 +116,7 @@ const Explorer = () => {
             </p>
           </div>
           <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-6 items-center justify-evenly">
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div className="flex flex-col items-center justify-center space-y-2 cursor-pointer">
               <img
                 src={Safety}
                 alt=""
@@ -120,7 +124,10 @@ const Explorer = () => {
               />
               <p className="text-xs font-normal">Safety</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setRopeworkModal(true)}
+            >
               <img
                 src={Ropework}
                 alt=""
@@ -128,7 +135,10 @@ const Explorer = () => {
               />
               <p className="text-xs font-normal">Ropework</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setFitnessModal(true)}
+            >
               <img
                 src={Physical}
                 alt=""
@@ -136,7 +146,10 @@ const Explorer = () => {
               />
               <p className="text-xs font-normal">Physical Fitness</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setCitizenshipModal(true)}
+            >
               <img
                 src={Citizenship}
                 alt=""
@@ -144,7 +157,10 @@ const Explorer = () => {
               />
               <p className="text-xs font-normal">Citizenship</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setCookingModal(true)}
+            >
               <img
                 src={Cooking}
                 alt=""
@@ -155,6 +171,14 @@ const Explorer = () => {
           </div>
         </div>
       </div>
+      {citizenshipModal && (
+        <CitizenshipModal onClose={() => setCitizenshipModal(false)} />
+      )}
+      {fitnessModal && <FitnessModal onClose={() => setFitnessModal(false)} />}
+      {cookingModal && <CookingModal onClose={() => setCookingModal(false)} />}
+      {ropeworkModal && (
+        <RopeworkModal onClose={() => setRopeworkModal(false)} />
+      )}
     </>
   );
 };

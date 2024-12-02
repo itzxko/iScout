@@ -14,64 +14,86 @@ const EditForm = ({
   const [question, setQuestion] = useState("");
   const [choices, setChoices] = useState<string[]>([""]);
   const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [quizQuestionImage, setQuizQuestionImage] = useState<File | null>(null);
+  const [quizQuestionImageString, setQuizQuestionImageString] = useState("");
   const [modal, setModal] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
   const [openChoices, setOpenChoices] = useState(false);
 
-  // Function to handle adding a new choice
-  const addChoice = () => {
-    setChoices([...choices, ""]);
-  };
-
-  // Function to handle updating a specific choice
+  const addChoice = () => setChoices([...choices, ""]);
   const updateChoice = (index: number, value: string) => {
     const updatedChoices = [...choices];
     updatedChoices[index] = value;
     setChoices(updatedChoices);
   };
-
-  // Function to handle removing a choice
   const removeChoice = (index: number) => {
     const updatedChoices = choices.filter((_, i) => i !== index);
     setChoices(updatedChoices);
-    if (selectedAnswer === `c${index + 1}`) {
-      setSelectedAnswer("");
-    }
+    if (selectedAnswer === `c${index + 1}`) setSelectedAnswer("");
   };
 
   useEffect(() => {
     const getData = async () => {
       if (questionId) {
         try {
-          let url = `http://localhost:8080/api/quizzes/${questionId}`;
-
-          let response = await axios.get(url);
-
+          const response = await axios.get(
+            `http://localhost:8080/api/quizzes/${questionId}`
+          );
           if (response.data.success) {
-            setQuestion(response.data.quizQuestion.question);
-            setChoices(response.data.quizQuestion.choices);
-            setSelectedAnswer(response.data.quizQuestion.answer);
+            const { question, choices, answer, image } =
+              response.data.quizQuestion;
+            setQuestion(question);
+            setChoices(choices);
+            setSelectedAnswer(answer);
+
+            // Construct image URL if filename is provided
+            const imageUrl = image
+              ? `http://localhost:8080/api/images/${image}`
+              : "";
+            setQuizQuestionImageString(imageUrl);
           }
         } catch (error: any) {
-          console.log(error);
+          console.error(error);
         }
       }
     };
 
     getData();
-  }, []);
+  }, [questionId]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setQuizQuestionImage(file);
+      // Create a preview of the selected image
+      const imageUrl = URL.createObjectURL(file);
+      setQuizQuestionImageString(imageUrl); // Update the image preview
+    }
+  };
 
   const updateQuestion = async () => {
     try {
-      let url = `http://localhost:8080/api/quizzes/${questionId}`;
+      const formData = new FormData();
+      formData.append("question", question);
+      formData.append("choices", JSON.stringify(choices));
+      formData.append("answer", selectedAnswer);
+      formData.append("rank", rank);
 
-      let response = await axios.put(url, {
-        question,
-        choices,
-        answer: selectedAnswer,
-        rank,
-      });
+      // * Handle image uploading logic
+      if (quizQuestionImage !== null) {
+        formData.append("imageChanged", "true");
+        formData.append("prevImageString", quizQuestionImageString);
+        formData.append("image", quizQuestionImage);
+      } else {
+        formData.append("imageChanged", "false");
+      }
+
+      const response = await axios.put(
+        `http://localhost:8080/api/quizzes/${questionId}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
       if (response.data.success) {
         setMessage(response.data.success);
@@ -80,7 +102,7 @@ const EditForm = ({
       }
     } catch (error: any) {
       setModal(true);
-      setMessage(error.response.data.error);
+      setMessage(error.response?.data?.error || "Error updating question.");
       setError(true);
     }
   };
@@ -110,6 +132,32 @@ const EditForm = ({
                 onChange={(e) => setQuestion(e.target.value)}
                 value={question}
               />
+            </div>
+
+            {/* Image Input */}
+            <div className="w-full flex flex-col items-start justify-center space-y-2">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="image-upload"
+                onChange={handleImageChange}
+              />
+              <label
+                htmlFor="image-upload"
+                className="cursor-pointer text-xs font-normal bg-[#EDEDED] px-6 py-3 rounded-xl w-full border-none outline-none flex items-center justify-center"
+              >
+                Choose Image
+              </label>
+
+              {/* Image Preview */}
+              {(quizQuestionImageString || quizQuestionImage) && (
+                <img
+                  src={quizQuestionImageString}
+                  alt="Current Question"
+                  className="w-full mt-2 rounded-lg"
+                />
+              )}
             </div>
 
             {/* Choices */}
@@ -147,15 +195,15 @@ const EditForm = ({
             <div className="relative w-full flex flex-col items-start justify-center space-y-2">
               <p className="text-xs font-semibold">Correct Answer:</p>
               <div
-                className="w-full flex flex-row items-center rounded-xl bg-[#EDEDED] justify-between space-x-4 px-6 py-2 "
+                className="w-full flex flex-row items-center rounded-xl bg-[#EDEDED] justify-between space-x-4 px-6 py-2"
                 onClick={() => setOpenChoices(!openChoices)}
               >
                 <p className="text-xs font-normal">{selectedAnswer}</p>
                 <i className="ri-arrow-down-s-line text-md"></i>
               </div>
-              {openChoices ? (
+              {openChoices && (
                 <div className="absolute top-[120%] bg-[#EDEDED] w-full flex flex-col items-center justify-center px-6 py-3 rounded-xl space-y-2">
-                  {choices.map((choice: string, index) => (
+                  {choices.map((choice, index) => (
                     <p
                       className="text-xs font-normal w-full text-center cursor-pointer"
                       onClick={() => {
@@ -168,7 +216,7 @@ const EditForm = ({
                     </p>
                   ))}
                 </div>
-              ) : null}
+              )}
             </div>
 
             <div className="w-full flex items-center justify-end">

@@ -7,17 +7,17 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet";
-import NavigationBar from "../../components/admin/NavigationBar";
+import NavigationBar from "../../components/leader/NavigationBar";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useCamps } from "../../context/CampsProvider";
-import AddCamp from "../../components/admin/camps/AddCamp";
+import AddCamp from "../../components/leader/camps/AddCamp";
 import axios from "axios";
 import Modal from "../../components/Modal";
-import EditCamp from "../../components/admin/camps/EditCamp";
+import EditCamp from "../../components/leader/camps/EditCamp";
 
 const Camp = () => {
   const navigate = useNavigate();
-  const { camps, getAllCamps } = useCamps();
+  const [camps, setCamps] = useState([]);
   const [editCamp, setEditCamp] = useState(false);
   const [addCamp, setAddCamp] = useState(false);
   const [selectedCamp, setSelectedCamp] = useState("");
@@ -28,10 +28,62 @@ const Camp = () => {
   const [modal, setModal] = useState(false);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
+  const [clickedCamps, setClickedCamps] = useState<any[]>([]);
+  const [id, setId] = useState("");
+  const [filter, setFilter] = useState("current");
+  const [global, setGlobal] = useState("true");
 
   useEffect(() => {
-    getAllCamps();
-  }, []);
+    getId();
+    getLeaderCamps(id, global, filter);
+    setClickedCamps([]);
+    console.log(camps);
+  }, [id, global, filter]);
+
+  const getLeaderCamps = async (id: string, global: string, filter: string) => {
+    if (id) {
+      try {
+        let url = `http://localhost:8080/api/camps?createdBy=${id}&withGlobal=${global}&type=${filter}`;
+
+        let response = await axios.get(url);
+
+        if (response.data.success) {
+          setCamps(response.data.camps);
+          console.log(id);
+        }
+      } catch (error: any) {
+        console.log(error);
+        setCamps([]);
+      }
+    }
+  };
+
+  const handleFilterClick = () => {
+    if (filter === "current") {
+      setFilter("past");
+    } else if (filter === "past") {
+      setFilter("upcoming");
+    } else if (filter === "upcoming") {
+      setFilter("current");
+    }
+  };
+
+  const handleGlobalClick = () => {
+    if (global === "true") {
+      setGlobal("false");
+    } else if (global === "false") {
+      setGlobal("true");
+    }
+  };
+
+  const getId = () => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      const currentUser = JSON.parse(user);
+      setId(currentUser._id);
+    }
+  };
 
   const getAddressFromCoordinates = async (
     lat: number,
@@ -82,14 +134,105 @@ const Camp = () => {
     }
   };
 
+  const handleMarkerClick = (lat: number, lng: number) => {
+    const key = `${lat},${lng}`;
+    const groupedCamps = groupCampsByCoordinates();
+    setClickedCamps(groupedCamps[key] || []); // Get all camps at the clicked location
+  };
+
+  const groupCampsByCoordinates = () => {
+    const groupedCamps: Record<string, any[]> = {};
+    camps.forEach((camp: any) => {
+      const key = `${camp.location.coordinates.lat},${camp.location.coordinates.lng}`;
+      if (!groupedCamps[key]) {
+        groupedCamps[key] = [];
+      }
+      groupedCamps[key].push(camp);
+    });
+    return groupedCamps;
+  };
+
   return (
     <>
       <div className="relative w-full h-[100svh] flex font-host-grotesk">
-        <div
-          className="absolute top-6 left-6 bg-gradient-to-tr from-[#466600] to-[#699900] px-4 py-2 rounded-xl z-[2] cursor-pointer"
-          onClick={() => navigate("/leader/home")}
-        >
-          <p className="text-xs font-semibold text-white">Back</p>
+        {clickedCamps.length > 0 && (
+          <div className="absolute top-0 right-0 z-[2] w-[360px] h-full flex flex-col justify-start items-center space-y-4 overflow-y-auto scrollbar-hide p-6">
+            {clickedCamps.map((camp: any) => (
+              <div
+                className="w-full flex flex-col items-center justify-start bg-[#FCFCFC] rounded-xl"
+                key={camp._id}
+              >
+                <div className="flex flex-col items-start justify-center space-y-2 p-6">
+                  <div className="w-full flex flex-row items-center justify-end">
+                    <i
+                      className="ri-close-line"
+                      onClick={() => setClickedCamps([])}
+                    ></i>
+                  </div>
+                  <h2 className="text-sm font-semibold mb-2 capitalize">
+                    {camp.name}
+                  </h2>
+                  <p className="text-xs font-normal">
+                    {`Location: ${camp.location.name}`}
+                  </p>
+                  <p className="text-xs font-normal">
+                    {`Summary: ${camp.summary}`}
+                  </p>
+                  <p className="text-xs font-normal capitalize">
+                    {`Status: ${camp.status}`}
+                  </p>
+                  <p className="text-xs font-normal">
+                    {`Date: ${new Date(camp.date).toLocaleDateString()}`}
+                  </p>
+                  <div className="w-full flex flex-row space-x-2">
+                    <div className="px-4 py-2 rounded-md bg-gradient-to-tr from-[#466600] to-[#699900]">
+                      <p
+                        className="text-xs font-normal cursor-pointer text-white"
+                        onClick={() => {
+                          setEditCamp(true);
+                          setSelectedCamp(camp._id);
+                        }}
+                      >
+                        Edit
+                      </p>
+                    </div>
+                    <div className="px-4 py-2 rounded-md bg-gradient-to-tr from-[#466600] to-[#699900]">
+                      <p
+                        className="text-xs font-normal cursor-pointer text-white"
+                        onClick={() => {
+                          deleteCamp(camp._id);
+                        }}
+                      >
+                        Delete
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="flex flex-row items-center justify-center absolute top-6 left-6 bg-white rounded-xl z-[2] space-x-4 px-4 py-2 shadow-black/25 shadow-xl">
+          <i
+            className="ri-arrow-left-s-line text-md cursor-pointer"
+            onClick={() => navigate("/leader/home")}
+          ></i>
+          <div className="flex flex-row items-center justify-center space-x-1 cursor-pointer">
+            <p className="text-xs font-normal capitalize">{filter}</p>
+            <i
+              className="ri-refresh-line text-sm"
+              onClick={handleFilterClick}
+            ></i>
+          </div>
+          <div className="flex flex-row items-center justify-center space-x-1 cursor-pointer">
+            <p className="text-xs font-normal capitalize">
+              {global === "true" ? "Global" : "School"}
+            </p>
+            <i
+              className="ri-refresh-line text-sm"
+              onClick={handleGlobalClick}
+            ></i>
+          </div>
         </div>
         <MapContainer
           center={[14.5939474, 120.9943488] as [number, number]}
@@ -109,19 +252,22 @@ const Camp = () => {
                 camp.location.coordinates.lat,
                 camp.location.coordinates.lng,
               ]}
+              eventHandlers={{
+                click: () =>
+                  handleMarkerClick(
+                    camp.location.coordinates.lat,
+                    camp.location.coordinates.lng
+                  ),
+              }}
             >
               <Popup className="font-host-grotesk">
                 <p className="text-sm font-semibold">
                   {`Location: ${camp.location.name}`}
                 </p>
-                <p className="text-xs font-normal">{`Description: ${camp.summary}`}</p>
-                <p className="text-xs font-normal">
-                  {` Date:
-                  ${new Date(camp.date).toLocaleDateString()}`}
-                </p>
               </Popup>
             </Marker>
           ))}
+          <MapClickHandler />
         </MapContainer>
       </div>
       {modal && (
@@ -129,7 +275,7 @@ const Camp = () => {
           message={message}
           onClose={() => {
             setModal(false);
-            getAllCamps();
+            getLeaderCamps(id, global, filter);
           }}
         />
       )}
@@ -138,7 +284,8 @@ const Camp = () => {
           coordinates={selectedCoordinates}
           onClose={() => {
             setAddCamp(false);
-            getAllCamps();
+            getLeaderCamps(id, global, filter);
+            setClickedCamps([]);
           }}
         />
       )}
@@ -147,7 +294,8 @@ const Camp = () => {
           campId={selectedCamp}
           onClose={() => {
             setEditCamp(false);
-            getAllCamps();
+            getLeaderCamps(id, global, filter);
+            setClickedCamps([]);
           }}
         />
       )}

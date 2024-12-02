@@ -64,10 +64,18 @@ const Register = () => {
           rank: rank,
         });
 
-        if (response.data.success) {
-          setMessage(response.data.success);
-          setVisibleModal(true);
-          setIsError(false);
+        if (level === "unitLeader") {
+          if (response.data.success) {
+            setMessage("Approval Request sent to Admin");
+            setVisibleModal(true);
+            setIsError(false);
+          } else {
+            if (response.data.success) {
+              setMessage(response.data.success);
+              setVisibleModal(true);
+              setIsError(false);
+            }
+          }
         }
       } else {
         setVisibleModal(true);

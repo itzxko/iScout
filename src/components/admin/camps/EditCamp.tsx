@@ -21,6 +21,12 @@ const EditCamp = ({
     new Date().toISOString().split("T")[0]
   );
   const [description, setDescription] = useState("");
+  const [unitLeaders, setUnitLeaders] = useState([]);
+  const [eventName, setEventName] = useState("");
+  const [invitedLeaders, setInvitedLeaders] = useState<{ userId: string }[]>(
+    []
+  );
+  const [creatorId, setCreatorId] = useState("");
 
   //modals
   const [modal, setModal] = useState(false);
@@ -64,6 +70,9 @@ const EditCamp = ({
           setEventDate(
             new Date(response.data.camp.date).toISOString().split("T")[0]
           );
+          setEventName(response.data.camp.name);
+          setCreatorId(response.data.camp.createdBy);
+          setInvitedLeaders(response.data.camp.invitedUnitLeaders);
         }
       } catch (error: any) {
         console.log(error);
@@ -71,6 +80,7 @@ const EditCamp = ({
     };
 
     fetchCamp();
+    getUnitLeaders();
   }, []);
 
   const updateCamp = async () => {
@@ -78,6 +88,7 @@ const EditCamp = ({
       let url = `http://localhost:8080/api/camps/${campId}`;
 
       let response = await axios.put(url, {
+        name: eventName,
         summary: description,
         date: eventDate,
         location: {
@@ -87,6 +98,9 @@ const EditCamp = ({
             lng: lng,
           },
         },
+        createdBy: creatorId,
+        invitedUnitLeaders: invitedLeaders,
+        status: "approved",
       });
 
       if (response.data.success) {
@@ -101,19 +115,46 @@ const EditCamp = ({
     }
   };
 
+  const getUnitLeaders = async () => {
+    try {
+      let url = `http://localhost:8080/api/users?userLevel=unitLeader`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        setUnitLeaders(response.data.users);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className="bg-black/50 fixed top-0 left-0 right-0 bottom-0 w-full p-6 overflow-y-auto flex justify-center font-host-grotesk z-10">
         <div className="flex w-full items-start justify-center">
           <div className="w-full lg:w-2/6 bg-white rounded-xl flex flex-col items-center justify-center space-y-6 p-6">
             <div className="relative w-full flex flex-col items-center justify-center">
-              <p className="text-md font-semibold">Add Camp</p>
+              <p className="text-md font-semibold">Edit Camp</p>
               <p className="text-xs font-normal text-[#6E6E6E]">
-                Add a camp or event
+                Edit a camp or event
               </p>
               <div className="absolute right-0 top-0">
                 <i className="ri-close-line text-md" onClick={onClose} />
               </div>
+            </div>
+
+            <div className="w-full flex flex-col items-start justify-center space-y-2">
+              <div className="w-full px-1">
+                <p className="text-xs font-semibold">Event Name:</p>
+              </div>
+              <input
+                type="text"
+                className="w-full bg-[#EDEDED] px-6 py-3 rounded-xl outline-none text-xs font-normal"
+                placeholder="event name"
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+              />
             </div>
 
             {/* Latitude Input */}
@@ -174,15 +215,56 @@ const EditCamp = ({
             {/* Event Description Input */}
             <div className="w-full flex flex-col items-start justify-center space-y-2">
               <div className="w-full px-1">
-                <p className="text-xs font-semibold">Event Description</p>
+                <p className="text-xs font-semibold">Event Summary</p>
               </div>
               <textarea
                 className="w-full bg-[#EDEDED] px-6 py-3 rounded-xl outline-none text-xs font-normal resize-none scrollbar-hide"
-                placeholder="Event description"
+                placeholder="event summary"
                 value={description}
                 rows={3}
                 onChange={(e) => setDescription(e.target.value)}
               />
+            </div>
+
+            <div className="w-full flex flex-col items-start justify-center space-y-2">
+              <p className="text-xs font-semibold">Invite Leaders</p>
+              <div className="w-full flex flex-row items-center justify-start overflow-x-auto scrollbar-hide space-x-4">
+                {unitLeaders.map((unitLeader: any) => {
+                  const isInvited = invitedLeaders.some(
+                    (leader: any) => leader.userId === unitLeader._id
+                  );
+
+                  return (
+                    <div
+                      className={`min-w-[280px] flex flex-col items-center justify-center p-6 rounded-xl ${
+                        isInvited ? "bg-[#99cc66]" : "bg-[#EDEDED]"
+                      } cursor-pointer`}
+                      key={unitLeader._id}
+                      onClick={() => {
+                        if (!isInvited) {
+                          setInvitedLeaders((prev) => [
+                            ...prev,
+                            { userId: unitLeader._id },
+                          ]);
+                        } else {
+                          setInvitedLeaders((prev) =>
+                            prev.filter(
+                              (leader: any) => leader.userId !== unitLeader._id
+                            )
+                          );
+                        }
+                      }}
+                    >
+                      <p className="text-xs font-semibold uppercase w-full truncate">
+                        {unitLeader.name}
+                      </p>
+                      <p className="text-xs font-normal text-[#6E6E6E] w-full truncate">
+                        School: {unitLeader.additionalDetails.school}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Submit Button */}

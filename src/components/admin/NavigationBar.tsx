@@ -53,6 +53,12 @@ const NavigationBar = () => {
                   Dashboard
                 </Link>
                 <Link
+                  to={"/admin/quiz-attempt"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Quiz Attempts
+                </Link>
+                <Link
                   to={"/admin/camps"}
                   className="text-xs font-normal cursor-pointer"
                 >
@@ -77,15 +83,14 @@ const NavigationBar = () => {
                   Attendance
                 </Link>
                 <Link
-                  to={"/admin/account"}
-                  className="font-normal cursor-pointer"
+                  to={"/admin/recommendations"}
+                  className="text-xs font-normal cursor-pointer"
                 >
-                  <i className="ri-user-3-line text-sm"></i>
+                  Recommendations
                 </Link>
-                <i
-                  className="ri-door-open-line cursor-pointer text-sm"
-                  onClick={onLogout}
-                ></i>
+                <Link to={"/admin/reports"} className="text-xs font-normal">
+                  Reports
+                </Link>
               </div>
             )}
             <i
@@ -96,40 +101,61 @@ const NavigationBar = () => {
           <div className="w-full flex flex-row justify-between items-center space-x-4 p-2">
             <p className="text-md font-semibold">{activeTab}</p>
             {isAuthenticated === true ? (
-              <div className="flex flex-row space-x-4 items-center justify-center overflow-hidden">
-                <div className="w-full flex flex-row space-x-4 overflow-x-auto scrollbar-hide">
-                  <Link
-                    to={"/admin/exam/explorer"}
-                    className="text-xs font-normal cursor-pointer"
-                  >
-                    Explorer
+              <>
+                <div className="flex flex-row space-x-4 items-center justify-center">
+                  <Link to={"/admin/account"} className="text-xs font-normal">
+                    Account
                   </Link>
-                  <Link
-                    to={"/admin/exam/pathfinder"}
-                    className="text-xs font-normal cursor-pointer"
+
+                  <div className="relative flex items-center justify-center px-2 group cursor-pointer">
+                    <p className="text-xs font-normal">Scout Ranks</p>
+
+                    <div className="group-hover:flex w-full hidden flex-col items-center justify-center absolute top-[100%] bg-[#FCFCFC] shadow-xl p-3 space-y-3 rounded-md">
+                      <Link
+                        to={"/admin/exam/explorer"}
+                        className="text-xs font-normal cursor-pointer w-full truncate"
+                      >
+                        Explorer
+                      </Link>
+
+                      <Link
+                        to={"/admin/exam/pathfinder"}
+                        className="text-xs font-normal cursor-pointer w-full truncate"
+                      >
+                        Pathfinder
+                      </Link>
+
+                      <Link
+                        to={"/admin/exam/outdoorsman"}
+                        className="text-xs font-normal cursor-pointer w-full truncate"
+                      >
+                        Outdoorsman
+                      </Link>
+
+                      <Link
+                        to={"/admin/exam/venturer"}
+                        className="text-xs font-normal cursor-pointer w-full truncate"
+                      >
+                        Venturer
+                      </Link>
+
+                      <Link
+                        to={"/admin/exam/eagle"}
+                        className="text-xs font-normal cursor-pointer w-full truncate"
+                      >
+                        Eagle
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div
+                    className="px-4 py-1.5 rounded-lg bg-black cursor-pointer "
+                    onClick={onLogout}
                   >
-                    Pathfinder
-                  </Link>
-                  <Link
-                    to={"/admin/exam/outdoorsman"}
-                    className="text-xs font-normal cursor-pointer"
-                  >
-                    Outdoorsman
-                  </Link>
-                  <Link
-                    to={"/admin/exam/venturer"}
-                    className="text-xs font-normal cursor-pointer"
-                  >
-                    Venturer
-                  </Link>
-                  <Link
-                    to={"/admin/exam/eagle"}
-                    className="text-xs font-normal cursor-pointer"
-                  >
-                    Eagle
-                  </Link>
+                    <p className="text-xs font-normal text-white">Logout</p>
+                  </div>
                 </div>
-              </div>
+              </>
             ) : null}
           </div>
         </div>
@@ -173,6 +199,12 @@ const NavigationBar = () => {
                 Dashboard
               </Link>
               <Link
+                to={"/admin/quiz-attempt"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Quiz Attempts
+              </Link>
+              <Link
                 to={"/admin/camps"}
                 className="text-xs font-normal cursor-pointer"
               >
@@ -197,10 +229,13 @@ const NavigationBar = () => {
                 Attendance
               </Link>
               <Link
-                to={"/admin/account"}
+                to={"/admin/recommendations"}
                 className="text-xs font-normal cursor-pointer"
               >
-                Account
+                Recommendations
+              </Link>
+              <Link to={"/admin/reports"} className="text-xs font-normal">
+                Reports
               </Link>
             </div>
           </div>

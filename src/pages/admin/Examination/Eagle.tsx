@@ -3,7 +3,7 @@ import NavigationBar from "../../../components/admin/NavigationBar";
 import { useQuiz } from "../../../context/QuizProvider";
 import axios from "axios";
 import Modal from "../../../components/Modal";
-import AddForm from "../../../components/admin/quiz/addForm";
+import AddForm from "../../../components/admin/quiz/AddForm";
 import EditForm from "../../../components/admin/quiz/EditForm";
 
 const Eagle = () => {
@@ -17,7 +17,7 @@ const Eagle = () => {
 
   useEffect(() => {
     getEagleQuiz();
-  });
+  }, []);
 
   const deleteQuestion = async (questionId: string) => {
     try {
@@ -58,7 +58,7 @@ const Eagle = () => {
           </div>
           {eagleQuiz.map((question: any, index: number) => (
             <div
-              className="w-full bg-[#F5F5F5] p-6 rounded-xl"
+              className="w-full bg-[#F5F5F5] p-6 rounded-xl space-y-4"
               key={question._id}
             >
               <div className="w-full flex flex-row items-center justify-between">
@@ -79,6 +79,13 @@ const Eagle = () => {
                   ></i>
                 </div>
               </div>
+              {question.image ? (
+                <img
+                  src={`http://localhost:8080/api/images/${question.image}`}
+                  className="w-full rounded-md"
+                  alt=""
+                />
+              ) : null}
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 {question.choices.map((choice: string, choiceIndex: number) => (
                   <div

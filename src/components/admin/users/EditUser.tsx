@@ -25,6 +25,8 @@ const EditUser = ({
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [imageString, setImageString] = useState<string | null>(null); // Store the image string (file name)
 
   //dropdown
   const [openLevel, setOpenLevel] = useState(false);
@@ -44,7 +46,6 @@ const EditUser = ({
       if (userId) {
         try {
           let url = `http://localhost:8080/api/users/${userId}`;
-
           let response = await axios.get(url);
 
           if (response.data.success) {
@@ -55,6 +56,13 @@ const EditUser = ({
             setSchool(response.data.user.additionalDetails.school);
             setScoutNumber(response.data.user.additionalDetails.scoutNumber);
             setRank(response.data.user.userRank.rank);
+
+            const initialImage = response.data.user.image;
+            if (initialImage) {
+              setImageString(
+                `http://localhost:8080/api/images/${initialImage}`
+              );
+            }
           }
         } catch (error: any) {
           console.log(error);
@@ -65,23 +73,49 @@ const EditUser = ({
     fetchData();
   }, []);
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      if (file) {
+        setImage(file);
+        // Create a temporary URL for the uploaded image
+        const imageUrl = URL.createObjectURL(file);
+        setImageString(imageUrl); // Update the preview URL
+      }
+    }
+  };
+
   const onUpdate = async () => {
     setLoading(true);
+
+    const formData = new FormData();
+    formData.append("name", username);
+    formData.append("userLevel", level);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append(
+      "additionalDetails",
+      JSON.stringify({ school, scoutNumber })
+    );
+    formData.append("status", "approved");
+
+    if (image) {
+      formData.append("image", image);
+      formData.append("imageChanged", "true");
+    } else {
+      formData.append("imageChanged", "false");
+    }
+
+    const prevImageString = imageString; // Store the previous image string
+    if (imageString && prevImageString) {
+      formData.append("prevImageString", prevImageString);
+    }
 
     try {
       if (passwordMatch) {
         let url = `http://localhost:8080/api/users/${userId}`;
-
-        let response = await axios.put(url, {
-          name: username,
-          userLevel: level,
-          email: email,
-          password: password,
-          additionalDetails: {
-            school: school,
-            scoutNumber: scoutNumber,
-          },
-          status: "approved",
+        const response = await axios.put(url, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
 
         if (response.data.success) {
@@ -92,10 +126,11 @@ const EditUser = ({
       } else {
         setVisibleModal(true);
         setIsError(true);
-        setMessage("passwords don't match");
+        setMessage("Passwords don't match");
       }
     } catch (error: any) {
-      console.log(error);
+      setMessage("File too large");
+      setVisibleModal(true);
       setIsError(true);
     } finally {
       setLoading(false);
@@ -105,7 +140,7 @@ const EditUser = ({
   return (
     <>
       <div className="bg-black/50 fixed top-0 left-0 right-0 bottom-0 w-full p-6 overflow-y-auto flex justify-center font-host-grotesk">
-        <div className="flex w-full items-start justify-center">
+        <div className="flex min-h-[100svh] w-full items-start justify-center">
           <div className="w-full lg:w-2/6 bg-white rounded-xl flex flex-col items-center justify-center space-y-6 p-6">
             <div className="w-full flex flex-row items-center justify-between">
               <div className="w-3/4 flex flex-col items-start justify-center">
@@ -120,6 +155,25 @@ const EditUser = ({
               />
             </div>
             <div className="w-full flex flex-col items-center justify-center space-y-4">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="image-upload"
+                onChange={handleImageChange}
+              />
+              <label
+                htmlFor="image-upload"
+                className="cursor-pointer text-xs font-normal bg-[#EDEDED] px-6 py-3 rounded-xl w-full border-none outline-none flex items-center justify-center"
+              >
+                Choose Image
+              </label>
+              {imageString && (
+                <img
+                  src={imageString} // This now works for both initial image from server and newly uploaded image
+                  className="mt-4 w-32 h-32 object-cover rounded-full"
+                />
+              )}
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 <p className="text-xs font-normal">Full Name</p>
                 <input

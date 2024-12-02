@@ -10,6 +10,21 @@ const AddForm = ({ onClose, rank }: { onClose: () => void; rank: string }) => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
   const [openChoices, setOpenChoices] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setImage(null);
+    setPreviewUrl(null);
+  };
 
   // Function to handle adding a new choice
   const addChoice = () => {
@@ -32,15 +47,47 @@ const AddForm = ({ onClose, rank }: { onClose: () => void; rank: string }) => {
     }
   };
 
+  // const addExplorer = async () => {
+  //   try {
+  //     let url = `http://localhost:8080/api/quizzes`;
+
+  //     let response = await axios.post(url, {
+  //       question,
+  //       choices,
+  //       answer: selectedAnswer,
+  //       rank,
+  //     });
+
+  //     if (response.data.success) {
+  //       setMessage(response.data.success);
+  //       setModal(true);
+  //       setError(false);
+  //     }
+  //   } catch (error: any) {
+  //     setModal(true);
+  //     setMessage(error.response.data.error);
+  //     setError(true);
+  //   }
+  // };
+
   const addExplorer = async () => {
     try {
-      let url = `http://localhost:8080/api/quizzes`;
+      const url = `http://localhost:8080/api/quizzes`;
+      const formData = new FormData();
+      formData.append("question", question);
+      formData.append("rank", rank);
+      formData.append("answer", selectedAnswer);
+      choices.forEach((choice, index) =>
+        formData.append(`choices[${index}]`, choice)
+      );
+      if (image) {
+        formData.append("image", image);
+      }
 
-      let response = await axios.post(url, {
-        question,
-        choices,
-        answer: selectedAnswer,
-        rank,
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (response.data.success) {
@@ -80,6 +127,38 @@ const AddForm = ({ onClose, rank }: { onClose: () => void; rank: string }) => {
                 onChange={(e) => setQuestion(e.target.value)}
                 value={question}
               />
+            </div>
+
+            <div className="w-full flex flex-col items-start justify-center space-y-2">
+              <p className="text-xs font-semibold">Upload Image Question:</p>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="image-upload"
+                onChange={handleImageUpload}
+              />
+              <label
+                htmlFor="image-upload"
+                className="cursor-pointer text-xs font-normal bg-[#EDEDED] px-6 py-3 rounded-xl w-full border-none outline-none flex items-center justify-center"
+              >
+                Choose Image
+              </label>
+              {previewUrl && (
+                <div className="relative w-full mt-2">
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="w-full h-48 object-cover rounded-xl"
+                  />
+                  <div
+                    className="absolute top-2 right-2 bg-black text-white rounded-full py-1 px-2 cursor-pointer"
+                    onClick={removeImage}
+                  >
+                    <i className="ri-close-line text-md"></i>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Choices */}

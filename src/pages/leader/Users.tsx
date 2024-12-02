@@ -129,6 +129,17 @@ const Users = () => {
                     ></i>
                   </div>
                 </div>
+                {user.image ? (
+                  <div className="w-full flex items-center justify-start">
+                    <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                      <img
+                        src={`http://localhost:8080/api/images/${user.image}`}
+                        alt=""
+                        className="w-full h-full object-cover object-center"
+                      />
+                    </div>
+                  </div>
+                ) : null}
                 <div className="w-full flex flex-row justify-between items-center">
                   <div className="w-1/2 flex flex-col truncate items-start justify-center">
                     <p className="capitalize font-semibold text-sm">

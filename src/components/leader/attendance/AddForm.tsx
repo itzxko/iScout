@@ -13,6 +13,8 @@ const AddForm = ({
 }) => {
   const [scouts, setScouts] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [modal, setModal] = useState(false);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
@@ -55,14 +57,30 @@ const AddForm = ({
   const isSelected = (userId: string) =>
     selectedUsers.some((user) => user.userId === userId);
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImage(null);
+      setImagePreview(null);
+    }
+  };
+
   const addAttendance = async () => {
     try {
-      console.log(campId);
       let url = `http://localhost:8080/api/camp-attendance`;
 
-      let response = await axios.post(url, {
-        campId: campId,
-        users: selectedUsers,
+      const formData = new FormData();
+      formData.append("campId", campId || "");
+      formData.append("users", JSON.stringify(selectedUsers));
+      if (image) {
+        formData.append("image", image);
+      }
+
+      let response = await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.data.success) {
@@ -114,36 +132,68 @@ const AddForm = ({
                 />
               </div>
             </div>
-            {scouts.map((scout: any) => (
-              <div
-                className={`w-full flex flex-col items-center justify-center ${
-                  isSelected(scout._id)
-                    ? "bg-gradient-to-tr from-[#050301] to-[#525252] text-white"
-                    : "bg-[#EBEBEB] text-black"
-                } p-6 rounded-xl cursor-pointer`}
-                key={scout._id}
-                onClick={() => handleUserClick(scout)} // Add user on click
+
+            {/* Image Upload Section */}
+            <div className="w-full flex flex-col items-start justify-center space-y-2">
+              <p className="text-xs font-semibold">Approval Letter:</p>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="image-upload"
+                onChange={handleImageChange}
+              />
+              <label
+                htmlFor="image-upload"
+                className="cursor-pointer text-xs font-normal bg-[#EDEDED] px-6 py-3 rounded-xl w-full border-none outline-none flex items-center justify-center"
               >
-                <div className="w-full flex flex-row items-center justify-between">
-                  <p className="w-1/2 truncate text-xs font-normal uppercase ">
-                    #{scout._id}
-                  </p>
+                Choose Image
+              </label>
+              {imagePreview && (
+                <div className="relative w-full mt-2">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-48 object-cover rounded-xl"
+                  />
                 </div>
-                <div className="w-full flex flex-row justify-between items-center">
-                  <div className="w-3/4 flex flex-col truncate items-start justify-center">
-                    <p className="capitalize font-semibold text-sm truncate w-full">
-                      {scout.name}
-                    </p>
-                    <p className="text-xs font-normal capitalize w-full truncate ">
-                      School: {scout.additionalDetails.school}
-                    </p>
-                    <p className="text-xs font-normal capitalize w-full truncate">
-                      S/N: {scout.additionalDetails.scoutNumber}
+              )}
+            </div>
+
+            <div className="w-full flex flex-col items-start justify-center space-y-2">
+              <p className="text-xs font-semibold">Choose Scouts</p>
+              {scouts.map((scout: any) => (
+                <div
+                  className={`w-full flex flex-col items-center justify-center ${
+                    isSelected(scout._id)
+                      ? "bg-[#699900] text-white"
+                      : "bg-[#EBEBEB] "
+                  } p-6 rounded-xl cursor-pointer`}
+                  key={scout._id}
+                  onClick={() => handleUserClick(scout)}
+                >
+                  <div className="w-full flex flex-row items-center justify-between">
+                    <p className="w-1/2 truncate text-xs font-normal uppercase ">
+                      #{scout._id}
                     </p>
                   </div>
+                  <div className="w-full flex flex-row justify-between items-center">
+                    <div className="w-3/4 flex flex-col truncate items-start justify-center">
+                      <p className="capitalize font-semibold text-sm truncate w-full">
+                        {scout.name}
+                      </p>
+                      <p className="text-xs font-normal capitalize w-full truncate ">
+                        School: {scout.additionalDetails.school}
+                      </p>
+                      <p className="text-xs font-normal capitalize w-full truncate">
+                        S/N: {scout.additionalDetails.scoutNumber}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
             <div
               className="w-full py-3 rounded-xl bg-gradient-to-tr from-[#466600] to-[#699900] flex items-center justify-center cursor-pointer"
               onClick={addAttendance}

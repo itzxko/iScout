@@ -8,13 +8,21 @@ import Man from "../../../assets/PathfinderMan.jpg";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import EnvironmentModal from "../../../components/badges/Pathfinder/EnvironmentModal";
+import FirstaidModal from "../../../components/badges/Pathfinder/FirstaidModal";
+import WeatherModal from "../../../components/badges/Pathfinder/WeatherModal";
+import SignalingModal from "../../../components/badges/Pathfinder/SignalingModal";
 
 const Pathfinder = () => {
   const [testDisabled, setTestDisabled] = useState(false);
+  const [environmentModal, setEnvironmentModal] = useState(false);
+  const [weatherModal, setWeatherModal] = useState(false);
+  const [firstaid, setFirstaidModal] = useState(false);
+  const [signalingModal, setSignalingModal] = useState(false);
+  const [navigation, setNavigationModal] = useState(false);
 
   useEffect(() => {
     const checkExamEligibility = async () => {
-      const userRank = localStorage.getItem("userRank");
       const user = localStorage.getItem("user");
 
       if (user) {
@@ -30,6 +38,11 @@ const Pathfinder = () => {
             console.log(response.data.alluserRanks);
             if (response.data.alluserRanks.rank === "pathfinder") {
               checkPathfinder(currentUser._id);
+            } else if (
+              response.data.alluserRanks.rank === "explorer" &&
+              response.data.alluserRanks.status === "approved"
+            ) {
+              setTestDisabled(false);
             } else {
               setTestDisabled(true);
             }
@@ -96,9 +109,6 @@ const Pathfinder = () => {
             <p className="text-xs font-normal text-[#999999]">Scouting</p>
           </div>
           <div className="w-full flex flex-row items-center justify-center space-x-2">
-            <div className="px-6 py-3 flex items-center justify-center bg-[#006A4E] hover:bg-[#1e7c63] duration-300 text-white rounded-xl cursor-pointer">
-              <p className="text-xs font-normal">Tutorial</p>
-            </div>
             {!testDisabled ? (
               <Link
                 to={"/scout/exam/pathfinder"}
@@ -130,7 +140,10 @@ const Pathfinder = () => {
             </p>
           </div>
           <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-6 items-center justify-evenly">
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setEnvironmentModal(true)}
+            >
               <img
                 src={Environment}
                 alt=""
@@ -138,7 +151,10 @@ const Pathfinder = () => {
               />
               <p className="text-xs font-normal">Environment</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setWeatherModal(true)}
+            >
               <img
                 src={Weather}
                 alt=""
@@ -146,7 +162,10 @@ const Pathfinder = () => {
               />
               <p className="text-xs font-normal">Weather</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setFirstaidModal(true)}
+            >
               <img
                 src={Firstaid}
                 alt=""
@@ -154,7 +173,10 @@ const Pathfinder = () => {
               />
               <p className="text-xs font-normal">First Aid</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setSignalingModal(true)}
+            >
               <img
                 src={Signaling}
                 alt=""
@@ -165,6 +187,14 @@ const Pathfinder = () => {
           </div>
         </div>
       </div>
+      {environmentModal && (
+        <EnvironmentModal onClose={() => setEnvironmentModal(false)} />
+      )}
+      {firstaid && <FirstaidModal onClose={() => setFirstaidModal(false)} />}
+      {weatherModal && <WeatherModal onClose={() => setWeatherModal(false)} />}
+      {signalingModal && (
+        <SignalingModal onClose={() => setSignalingModal(false)} />
+      )}
     </>
   );
 };

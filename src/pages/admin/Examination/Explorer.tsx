@@ -3,7 +3,7 @@ import NavigationBar from "../../../components/admin/NavigationBar";
 import { useQuiz } from "../../../context/QuizProvider";
 import axios from "axios";
 import Modal from "../../../components/Modal";
-import AddForm from "../../../components/admin/quiz/addForm";
+import AddForm from "../../../components/admin/quiz/AddForm";
 import EditForm from "../../../components/admin/quiz/EditForm";
 
 const Explorer = () => {
@@ -17,7 +17,8 @@ const Explorer = () => {
 
   useEffect(() => {
     getExplorerQuiz();
-  });
+    console.log(explorerQuiz);
+  }, []);
 
   const deleteQuestion = async (questionId: string) => {
     try {
@@ -58,14 +59,14 @@ const Explorer = () => {
           </div>
           {explorerQuiz.map((question: any, index: number) => (
             <div
-              className="w-full bg-[#F5F5F5] p-6 rounded-xl"
+              className="w-full bg-[#F5F5F5] p-6 rounded-xl space-y-4"
               key={question._id}
             >
               <div className="w-full flex flex-row items-center justify-between">
                 <p className="max-w-[3/4] text-xs font-semibold pb-4 truncate">
                   {index + 1}. {question.question}
                 </p>
-                <div className="flex flex-row space-x-2">
+                <div className="flex flex-row space-x-2 items-center justify-center">
                   <i
                     className="ri-edit-line text-md cursor-pointer"
                     onClick={() => {
@@ -79,6 +80,13 @@ const Explorer = () => {
                   ></i>
                 </div>
               </div>
+              {question.image ? (
+                <img
+                  src={`http://localhost:8080/api/images/${question.image}`}
+                  className="w-full rounded-md"
+                  alt=""
+                />
+              ) : null}
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 {question.choices.map((choice: string, choiceIndex: number) => (
                   <div

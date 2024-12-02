@@ -12,13 +12,18 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthProvider";
 import { useUsers } from "../../../context/UsersProvider";
 import axios from "axios";
+import WorldBrotherhood from "../../../assets/badge/worldbrotherhood.png";
+import Lifesaving from "../../../assets/badge/lifesaving.png";
+import LifesavingModal from "../../../components/badges/Venturer/LifesavingModal";
+import WorldbrotherhoodModal from "../../../components/badges/Venturer/WorldbrotherhoodModal";
 
 const Eagle = () => {
   const [testDisabled, setTestDisabled] = useState(false);
+  const [worldbrotherhoodModal, setWorldBrotherhoodModal] = useState(false);
+  const [lifesavingModal, setLifeSavingModal] = useState(false);
 
   useEffect(() => {
     const checkExamEligibility = async () => {
-      const userRank = localStorage.getItem("userRank");
       const user = localStorage.getItem("user");
 
       if (user) {
@@ -34,6 +39,11 @@ const Eagle = () => {
             console.log(response.data.alluserRanks);
             if (response.data.alluserRanks.rank === "eagle") {
               checkEagle(currentUser._id);
+            } else if (
+              response.data.alluserRanks.rank === "venturer" &&
+              response.data.alluserRanks.status === "approved"
+            ) {
+              setTestDisabled(false);
             } else {
               console.log("di sya venturer");
               setTestDisabled(true);
@@ -104,9 +114,6 @@ const Eagle = () => {
             <p className="text-xs font-normal text-[#999999]">Scouting</p>
           </div>
           <div className="w-full flex flex-row items-center justify-center space-x-2">
-            <div className="px-6 py-3 flex items-center justify-center bg-[#006A4E] hover:bg-[#1e7c63] duration-300 text-white rounded-xl cursor-pointer">
-              <p className="text-xs font-normal">Tutorial</p>
-            </div>
             {!testDisabled ? (
               <Link
                 to={"/scout/exam/eagle"}
@@ -144,52 +151,40 @@ const Eagle = () => {
             </p>
           </div>
 
-          <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-6 items-center justify-evenly">
-            <div className="flex flex-col items-center justify-center space-y-2">
+          <div className="w-full grid grid-cols-2 lg:grid-cols-1 gap-6 items-center justify-center">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setLifeSavingModal(true)}
+            >
               <img
-                src={Hiking}
+                src={Lifesaving}
                 alt=""
                 className="w-[120px] h-[120px] rounded-full"
               />
-              <p className="text-xs font-normal">Hiking</p>
+              <p className="text-xs font-normal">Life Saving</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setWorldBrotherhoodModal(true)}
+            >
               <img
-                src={CitizenshipCommunity}
+                src={WorldBrotherhood}
                 alt=""
                 className="w-[120px] h-[120px] rounded-full"
               />
-              <p className="text-xs font-normal">Citzensip in the Community</p>
-            </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
-              <img
-                src={CitizenshipNation}
-                alt=""
-                className="w-[120px] h-[120px] rounded-full"
-              />
-              <p className="text-xs font-normal">
-                Citizenship in the Community
-              </p>
-            </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
-              <img
-                src={Fitness}
-                alt=""
-                className="w-[120px] h-[120px] rounded-full"
-              />
-              <p className="text-xs font-normal">Physical Fitness</p>
-            </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
-              <img
-                src={Camping}
-                alt=""
-                className="w-[120px] h-[120px] rounded-full"
-              />
-              <p className="text-xs font-normal">Camping</p>
+              <p className="text-xs font-normal">World Brotherhood</p>
             </div>
           </div>
         </div>
       </div>
+      {lifesavingModal && (
+        <LifesavingModal onClose={() => setLifeSavingModal(false)} />
+      )}
+      {worldbrotherhoodModal && (
+        <WorldbrotherhoodModal
+          onClose={() => setWorldBrotherhoodModal(false)}
+        />
+      )}
     </>
   );
 };

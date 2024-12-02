@@ -34,6 +34,11 @@ const Users = () => {
     password: string;
     status: string;
     image: string;
+    userRank: [
+      {
+        rank: string;
+      }
+    ];
   }
 
   const deleteUser = async (userId: string) => {
@@ -43,7 +48,7 @@ const Users = () => {
       let response = await axios.delete(url);
 
       if (response.data.success) {
-        getApprovedUsers();
+        getApprovedUsers(searchText, levelFilter);
         setVisibleModal(true);
         setMessage(response.data.success);
       }
@@ -121,6 +126,17 @@ const Users = () => {
                     ></i>
                   </div>
                 </div>
+                {user.image ? (
+                  <div className="w-full flex items-center justify-start">
+                    <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                      <img
+                        src={`http://localhost:8080/api/images/${user.image}`}
+                        alt=""
+                        className="w-full h-full object-cover object-center"
+                      />
+                    </div>
+                  </div>
+                ) : null}
                 <div className="w-full flex flex-row justify-between items-center">
                   <div className="w-1/2 flex flex-col truncate items-start justify-center">
                     <p className="capitalize font-semibold text-sm">
@@ -141,6 +157,11 @@ const Users = () => {
                     <p className="text-xs font-normal text-[#999999] capitalize">
                       S/N: {user.additionalDetails.scoutNumber}
                     </p>
+                    {user.userRank.map((rank: any) => (
+                      <p className="text-xs font-normal text-[#999999] capitalize">
+                        Rank: {rank.rank ? rank.rank : null}
+                      </p>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -155,7 +176,7 @@ const Users = () => {
         <AddUser
           onClose={() => {
             setAddForm(false);
-            getApprovedUsers();
+            getApprovedUsers(searchText, levelFilter);
           }}
         />
       )}
@@ -164,7 +185,7 @@ const Users = () => {
           userId={selectedUser}
           onClose={() => {
             setEditForm(false);
-            getApprovedUsers();
+            getApprovedUsers(searchText, levelFilter);
           }}
         />
       )}

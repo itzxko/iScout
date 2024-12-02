@@ -101,12 +101,19 @@ const EagleExam = () => {
           </div>
           {eagleQuiz.map((question: any, index: number) => (
             <div
-              className="w-full bg-[#F5F5F5] p-6 rounded-xl"
+              className="w-full bg-[#F5F5F5] p-6 rounded-xl space-y-4"
               key={question._id}
             >
               <p className="text-xs font-semibold pb-4">
                 {index + 1}. {question.question}
               </p>
+              {question.image ? (
+                <img
+                  src={`http://localhost:8080/api/images/${question.image}`}
+                  className="w-full rounded-md"
+                  alt=""
+                />
+              ) : null}
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 {question.choices.map((choice: string, choiceIndex: number) => (
                   <div

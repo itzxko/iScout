@@ -48,7 +48,13 @@ const NavigationBar = () => {
                   to={"/leader/home"}
                   className="text-xs font-normal cursor-pointer"
                 >
-                  Home
+                  Dashboard
+                </Link>
+                <Link
+                  to={"/leader/quiz-attempts"}
+                  className="text-xs font-normal cursor-pointer"
+                >
+                  Quiz Attempts
                 </Link>
 
                 <Link
@@ -69,22 +75,6 @@ const NavigationBar = () => {
                 >
                   Attendance
                 </Link>
-                <Link
-                  to={"/leader/bor"}
-                  className="text-xs font-normal cursor-pointer"
-                >
-                  BOR
-                </Link>
-                <Link
-                  to={"/leader/account"}
-                  className="font-normal cursor-pointer"
-                >
-                  <i className="ri-user-3-line text-sm"></i>
-                </Link>
-                <i
-                  className="ri-door-open-line cursor-pointer text-sm"
-                  onClick={onLogout}
-                ></i>
               </div>
             )}
             <i
@@ -95,9 +85,15 @@ const NavigationBar = () => {
           <div className="w-full flex flex-row justify-between items-center p-2">
             <p className="text-md font-semibold">{activeTab}</p>
             <div className="flex flex-row space-x-4 items-center justify-center">
-              <p className="text-xs font-normal cursor-pointer">About</p>
-              <p className="text-xs font-normal cursor-pointer">Scouts</p>
-              <p className="text-xs font-normal cursor-pointer">Learn More</p>
+              <Link to={"/leader/account"} className="text-xs font-normal">
+                Account
+              </Link>
+              <div
+                className="px-4 py-1.5 rounded-lg bg-black cursor-pointer "
+                onClick={onLogout}
+              >
+                <p className="text-xs font-normal text-white">Logout</p>
+              </div>
             </div>
           </div>
         </div>
@@ -138,8 +134,15 @@ const NavigationBar = () => {
                 to={"/leader/home"}
                 className="text-xs font-normal cursor-pointer"
               >
-                Home
+                Dashboard
               </Link>
+              <Link
+                to={"/leader/quiz-attempts"}
+                className="text-xs font-normal cursor-pointer"
+              >
+                Quiz Attempts
+              </Link>
+
               <Link
                 to={"/leader/camps"}
                 className="text-xs font-normal cursor-pointer"
@@ -157,18 +160,6 @@ const NavigationBar = () => {
                 className="text-xs font-normal cursor-pointer"
               >
                 Attendance
-              </Link>
-              <Link
-                to={"/leader/bor"}
-                className="text-xs font-normal cursor-pointer"
-              >
-                BOR
-              </Link>
-              <Link
-                to={"/leader/account"}
-                className="text-xs font-normal cursor-pointer"
-              >
-                Account
               </Link>
             </div>
           </div>

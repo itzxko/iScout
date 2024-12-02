@@ -19,9 +19,37 @@ import Man from "../../../assets/VenturerMan.jpg";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import HikingModal from "../../../components/badges/Venturer/HikingModal";
+import NatureModal from "../../../components/badges/Venturer/NatureModal";
+import WildlifeModal from "../../../components/badges/Venturer/WildlifeModal";
+import ForestryModal from "../../../components/badges/Venturer/ForestryModal";
+import PioneeringModal from "../../../components/badges/Venturer/PioneeringModal";
+import AstronomyModal from "../../../components/badges/Venturer/AstronomyModal";
+import AviationModal from "../../../components/badges/Venturer/AviationModal";
+import ElectricityModal from "../../../components/badges/Venturer/ElectricityModal";
+import ElectronicsModal from "../../../components/badges/Venturer/ElectronicsModal";
+import RadioModal from "../../../components/badges/Venturer/RadioModal";
+import SeamanshipModal from "../../../components/badges/Venturer/SeamanshipModal";
+import BoatingModal from "../../../components/badges/Venturer/BoatingModal";
+import SnorkelingModal from "../../../components/badges/Venturer/SnorkelingModal";
+import FishingModal from "../../../components/badges/Venturer/FishingModal";
 
 const Venturer = () => {
   const [testDisabled, setTestDisabled] = useState(false);
+  const [hikingModal, setHikingModal] = useState(false);
+  const [natureModal, setNatureModal] = useState(false);
+  const [wildlifeModal, setWildlifeModal] = useState(false);
+  const [forestryModal, setForestryModal] = useState(false);
+  const [pioneeringModal, setPioneeringModal] = useState(false);
+  const [astronomyModal, setAstronomyModal] = useState(false);
+  const [aviationModal, setAviationModal] = useState(false);
+  const [electricityModal, setElectricityModal] = useState(false);
+  const [electronicsModal, setElectronicsModal] = useState(false);
+  const [radioModal, setRadioModal] = useState(false);
+  const [seamanshipModal, setSeamanshipModal] = useState(false);
+  const [boatingModal, setBoatingModal] = useState(false);
+  const [snorkelingModal, setSnorkelingModal] = useState(false);
+  const [fishingModal, setFishingModal] = useState(false);
 
   useEffect(() => {
     const checkExamEligibility = async () => {
@@ -39,8 +67,13 @@ const Venturer = () => {
 
           if (response.data.success) {
             console.log(response.data.alluserRanks);
-            if (response.data.alluserRanks.rank === "outdoorsman") {
+            if (response.data.alluserRanks.rank === "venturer") {
               checkVenturer(currentUser._id);
+            } else if (
+              response.data.alluserRanks.rank === "outdoorsman" &&
+              response.data.alluserRanks.status === "approved"
+            ) {
+              setTestDisabled(false);
             } else {
               console.log("di sya venturer");
               setTestDisabled(true);
@@ -107,9 +140,6 @@ const Venturer = () => {
             <p className="text-xs font-normal text-[#999999]">Scouting</p>
           </div>
           <div className="w-full flex flex-row items-center justify-center space-x-2">
-            <div className="px-6 py-3 flex items-center justify-center bg-[#006A4E] hover:bg-[#1e7c63] duration-300 text-white rounded-xl cursor-pointer">
-              <p className="text-xs font-normal">Tutorial</p>
-            </div>
             {!testDisabled ? (
               <Link
                 to={"/scout/exam/venturer"}
@@ -146,7 +176,10 @@ const Venturer = () => {
           <div className="w-full flex flex-col items-center justify-center space-y-4">
             <p className="text-sm font-semibold">Land</p>
             <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-6 items-center justify-evenly">
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setHikingModal(true)}
+              >
                 <img
                   src={Hiking}
                   alt=""
@@ -154,7 +187,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Hiking</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setNatureModal(true)}
+              >
                 <img
                   src={Nature}
                   alt=""
@@ -162,7 +198,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Nature</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setWildlifeModal(true)}
+              >
                 <img
                   src={Wildlife}
                   alt=""
@@ -170,7 +209,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Wildlife</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setForestryModal(true)}
+              >
                 <img
                   src={Forestry}
                   alt=""
@@ -178,7 +220,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Forestry</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setPioneeringModal(true)}
+              >
                 <img
                   src={Pioneering}
                   alt=""
@@ -191,7 +236,10 @@ const Venturer = () => {
           <div className="w-full flex flex-col items-center justify-center space-y-4">
             <p className="text-sm font-semibold">Air</p>
             <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-6 items-center justify-evenly">
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setAstronomyModal(true)}
+              >
                 <img
                   src={Astronomy}
                   alt=""
@@ -199,7 +247,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Astronomy</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setAviationModal(true)}
+              >
                 <img
                   src={Aviation}
                   alt=""
@@ -207,7 +258,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Aviation</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setElectricityModal(true)}
+              >
                 <img
                   src={Electricity}
                   alt=""
@@ -215,7 +269,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Electricity</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setElectronicsModal(true)}
+              >
                 <img
                   src={Electronics}
                   alt=""
@@ -223,7 +280,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Electronics</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setRadioModal(true)}
+              >
                 <img
                   src={Radio}
                   alt=""
@@ -236,7 +296,10 @@ const Venturer = () => {
           <div className="w-full flex flex-col items-center justify-center space-y-4">
             <p className="text-sm font-semibold">Sea</p>
             <div className="w-full grid grid-cols-2 lg:grid-cols-5 gap-6 items-center justify-evenly">
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setSeamanshipModal(true)}
+              >
                 <img
                   src={Seamanship}
                   alt=""
@@ -244,7 +307,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Seamanship</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setBoatingModal(true)}
+              >
                 <img
                   src={Boating}
                   alt=""
@@ -252,7 +318,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Boating</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setSnorkelingModal(true)}
+              >
                 <img
                   src={Snorkeling}
                   alt=""
@@ -260,7 +329,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Snorkeling</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setFishingModal(true)}
+              >
                 <img
                   src={Fishing}
                   alt=""
@@ -268,7 +340,10 @@ const Venturer = () => {
                 />
                 <p className="text-xs font-normal">Fishing</p>
               </div>
-              <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                onClick={() => setRadioModal(true)}
+              >
                 <img
                   src={SeaRadio}
                   alt=""
@@ -280,6 +355,38 @@ const Venturer = () => {
           </div>
         </div>
       </div>
+      {hikingModal && <HikingModal onClose={() => setHikingModal(false)} />}
+      {natureModal && <NatureModal onClose={() => setNatureModal(false)} />}
+      {wildlifeModal && (
+        <WildlifeModal onClose={() => setWildlifeModal(false)} />
+      )}
+      {forestryModal && (
+        <ForestryModal onClose={() => setForestryModal(false)} />
+      )}
+      {pioneeringModal && (
+        <PioneeringModal onClose={() => setPioneeringModal(false)} />
+      )}
+      {astronomyModal && (
+        <AstronomyModal onClose={() => setAstronomyModal(false)} />
+      )}
+      {aviationModal && (
+        <AviationModal onClose={() => setAviationModal(false)} />
+      )}
+      {electricityModal && (
+        <ElectricityModal onClose={() => setElectricityModal(false)} />
+      )}
+      {electronicsModal && (
+        <ElectronicsModal onClose={() => setElectronicsModal(false)} />
+      )}
+      {radioModal && <RadioModal onClose={() => setRadioModal(false)} />}
+      {seamanshipModal && (
+        <SeamanshipModal onClose={() => setSeamanshipModal(false)} />
+      )}
+      {boatingModal && <BoatingModal onClose={() => setBoatingModal(false)} />}
+      {snorkelingModal && (
+        <SnorkelingModal onClose={() => setSnorkelingModal(false)} />
+      )}
+      {fishingModal && <FishingModal onClose={() => setFishingModal(false)} />}
     </>
   );
 };

@@ -5,6 +5,7 @@ import { useAttendance } from "../../context/AttendanceProvider";
 import AttendanceForm from "../../components/leader/attendance/AttendanceForm";
 
 interface Camp {
+  name: string;
   location: {
     coordinates: {
       lat: number;
@@ -71,7 +72,7 @@ const Attendance = () => {
               <div className="w-full flex flex-row justify-between items-center">
                 <div className="w-3/4 flex flex-col truncate items-start justify-center">
                   <p className="capitalize font-semibold text-sm truncate w-full">
-                    {camp.location.name}
+                    {camp.name}
                   </p>
                   <p className="text-xs font-normal text-[#999999] capitalize w-full truncate">
                     Latitude: {camp.location.coordinates.lat}

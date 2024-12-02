@@ -14,13 +14,19 @@ const AddCamp = ({
   onClose: () => void;
   coordinates: Coordinates | null;
 }) => {
+  const [unitLeaders, setUnitLeaders] = useState([]);
   const [locationName, setLocationName] = useState("Fetching location...");
   const [lat, setLat] = useState(coordinates?.lat || 0);
   const [lng, setLng] = useState(coordinates?.lng || 0);
   const [eventDate, setEventDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [eventName, setEventName] = useState("");
+  const [invitedLeaders, setInvitedLeaders] = useState<{ userId: string }[]>(
+    []
+  );
   const [description, setDescription] = useState("");
+  const [creatorId, setCreatorId] = useState("");
 
   //modals
   const [modal, setModal] = useState(false);
@@ -47,13 +53,39 @@ const AddCamp = ({
     if (lat && lng) {
       fetchLocationName(lat, lng);
     }
+    getId();
+    getUnitLeaders();
   }, [lat, lng]);
+
+  const getId = () => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      const currentUser = JSON.parse(user);
+      setCreatorId(currentUser._id);
+    }
+  };
+
+  const getUnitLeaders = async () => {
+    try {
+      let url = `http://localhost:8080/api/users?userLevel=unitLeader`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        setUnitLeaders(response.data.users);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
 
   const addCamp = async () => {
     try {
       let url = `http://localhost:8080/api/camps/`;
 
       let response = await axios.post(url, {
+        name: eventName,
         summary: description,
         date: eventDate,
         location: {
@@ -63,6 +95,8 @@ const AddCamp = ({
             lng: lng,
           },
         },
+        createdBy: creatorId,
+        invitedUnitLeaders: invitedLeaders,
       });
 
       if (response.data.success) {
@@ -90,6 +124,19 @@ const AddCamp = ({
               <div className="absolute right-0 top-0">
                 <i className="ri-close-line text-md" onClick={onClose} />
               </div>
+            </div>
+
+            <div className="w-full flex flex-col items-start justify-center space-y-2">
+              <div className="w-full px-1">
+                <p className="text-xs font-semibold">Event Name:</p>
+              </div>
+              <input
+                type="text"
+                className="w-full bg-[#EDEDED] px-6 py-3 rounded-xl outline-none text-xs font-normal"
+                placeholder="event name"
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+              />
             </div>
 
             {/* Latitude Input */}
@@ -150,15 +197,56 @@ const AddCamp = ({
             {/* Event Description Input */}
             <div className="w-full flex flex-col items-start justify-center space-y-2">
               <div className="w-full px-1">
-                <p className="text-xs font-semibold">Event Description</p>
+                <p className="text-xs font-semibold">Event Summary</p>
               </div>
               <textarea
                 className="w-full bg-[#EDEDED] px-6 py-3 rounded-xl outline-none text-xs font-normal resize-none scrollbar-hide"
-                placeholder="Event description"
+                placeholder="event summary"
                 value={description}
                 rows={3}
                 onChange={(e) => setDescription(e.target.value)}
               />
+            </div>
+
+            <div className="w-full flex flex-col items-start justify-center space-y-2">
+              <p className="text-xs font-semibold">Invite Leaders</p>
+              <div className="w-full flex flex-row items-center justify-start overflow-x-auto scrollbar-hide space-x-4">
+                {unitLeaders.map((unitLeader: any) => {
+                  const isInvited = invitedLeaders.some(
+                    (leader: any) => leader.userId === unitLeader._id
+                  );
+
+                  return (
+                    <div
+                      className={`min-w-[280px] flex flex-col items-center justify-center p-6 rounded-xl ${
+                        isInvited ? "bg-[#99cc66]" : "bg-[#EDEDED]"
+                      } cursor-pointer`}
+                      key={unitLeader._id}
+                      onClick={() => {
+                        if (!isInvited) {
+                          setInvitedLeaders((prev) => [
+                            ...prev,
+                            { userId: unitLeader._id },
+                          ]);
+                        } else {
+                          setInvitedLeaders((prev) =>
+                            prev.filter(
+                              (leader: any) => leader.userId !== unitLeader._id
+                            )
+                          );
+                        }
+                      }}
+                    >
+                      <p className="text-xs font-semibold uppercase w-full truncate">
+                        {unitLeader.name}
+                      </p>
+                      <p className="text-xs font-normal text-[#6E6E6E] w-full truncate">
+                        School: {unitLeader.additionalDetails.school}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Submit Button */}

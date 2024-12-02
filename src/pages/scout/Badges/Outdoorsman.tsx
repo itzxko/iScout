@@ -7,9 +7,15 @@ import Man from "../../../assets/OutdoorsmanMan.jpg";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import CampingModal from "../../../components/badges/Outdoorsman/CampingModal";
+import SwimmingModal from "../../../components/badges/Outdoorsman/SwimmingModal";
+import EmergencyModal from "../../../components/badges/Outdoorsman/EmergencyModal";
 
 const Explorer = () => {
   const [testDisabled, setTestDisabled] = useState(false);
+  const [campingModal, setCampingModal] = useState(false);
+  const [swimmingModal, setSwimmingModal] = useState(false);
+  const [emergencyModal, setEmergencyModal] = useState(false);
 
   useEffect(() => {
     const checkExamEligibility = async () => {
@@ -29,6 +35,11 @@ const Explorer = () => {
             console.log(response.data.alluserRanks);
             if (response.data.alluserRanks.rank === "outdoorsman") {
               checkOutdoorsman(currentUser._id);
+            } else if (
+              response.data.alluserRanks.rank === "pathfinder" &&
+              response.data.alluserRanks.status === "approved"
+            ) {
+              setTestDisabled(false);
             } else {
               setTestDisabled(true);
             }
@@ -95,9 +106,6 @@ const Explorer = () => {
             <p className="text-xs font-normal text-[#999999]">Scouting</p>
           </div>
           <div className="w-full flex flex-row items-center justify-center space-x-2">
-            <div className="px-6 py-3 flex items-center justify-center bg-[#006A4E] hover:bg-[#1e7c63] duration-300 text-white rounded-xl cursor-pointer">
-              <p className="text-xs font-normal">Tutorial</p>
-            </div>
             {!testDisabled ? (
               <Link
                 to={"/scout/exam/outdoorsman"}
@@ -132,7 +140,10 @@ const Explorer = () => {
             </p>
           </div>
           <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-6 items-center justify-evenly">
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setCampingModal(true)}
+            >
               <img
                 src={Camping}
                 alt=""
@@ -140,7 +151,10 @@ const Explorer = () => {
               />
               <p className="text-xs font-normal">Camping</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setSwimmingModal(true)}
+            >
               <img
                 src={Swimming}
                 alt=""
@@ -148,7 +162,10 @@ const Explorer = () => {
               />
               <p className="text-xs font-normal">Swimming</p>
             </div>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div
+              className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+              onClick={() => setEmergencyModal(true)}
+            >
               <img
                 src={Emergency}
                 alt=""
@@ -159,6 +176,13 @@ const Explorer = () => {
           </div>
         </div>
       </div>
+      {campingModal && <CampingModal onClose={() => setCampingModal(false)} />}
+      {swimmingModal && (
+        <SwimmingModal onClose={() => setSwimmingModal(false)} />
+      )}
+      {emergencyModal && (
+        <EmergencyModal onClose={() => setEmergencyModal(false)} />
+      )}
     </>
   );
 };
