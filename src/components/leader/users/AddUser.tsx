@@ -17,6 +17,8 @@ const AddUser = ({
   const [school, setSchool] = useState(schoolName);
   const [scoutNumber, setScoutNumber] = useState("");
   const [rank, setRank] = useState("explorer");
+  const [vRepeatPass, setVRepeatPass] = useState(false);
+  const [vPassword, setVPassword] = useState(false);
 
   //password match
   const [passwordMatch, setPasswordMatch] = useState(false);
@@ -149,23 +151,49 @@ const AddUser = ({
               </div>
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 <p className="text-xs font-normal">Password</p>
-                <input
-                  type="password"
-                  className="w-full outline-none border-none text-xs font-normal px-4 py-3 bg-[#E8E8E8] rounded-md"
-                  placeholder="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="w-full flex flex-row items-center justify-between px-4 py-2.5 bg-[#E8E8E8] rounded-md gap-2">
+                  <input
+                    type={!vPassword ? "password" : "text"}
+                    className="w-full outline-none border-none text-xs font-normal  bg-[#E8E8E8]"
+                    placeholder="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  {!vPassword ? (
+                    <i
+                      className="ri-eye-line cursor-pointer"
+                      onClick={() => setVPassword(!vPassword)}
+                    ></i>
+                  ) : (
+                    <i
+                      className="ri-eye-close-line cursor-pointer"
+                      onClick={() => setVPassword(!vPassword)}
+                    ></i>
+                  )}
+                </div>
               </div>
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 <p className="text-xs font-normal">Re-enter Password</p>
-                <input
-                  type="password"
-                  className="w-full outline-none border-none text-xs font-normal px-4 py-3 bg-[#E8E8E8] rounded-md"
-                  placeholder="re-enter password"
-                  disabled={password === ""}
-                  onChange={handleConfirmPasswordChange}
-                />
+                <div className="w-full flex flex-row items-center justify-between px-4 py-2.5 bg-[#E8E8E8] rounded-md gap-2">
+                  <input
+                    type={!vRepeatPass ? "password" : "text"}
+                    className="w-full outline-none border-none text-xs font-normal  bg-[#E8E8E8]"
+                    placeholder="password"
+                    disabled={password === ""}
+                    onChange={handleConfirmPasswordChange}
+                  />
+                  {!vRepeatPass ? (
+                    <i
+                      className="ri-eye-line cursor-pointer"
+                      onClick={() => setVRepeatPass(!vRepeatPass)}
+                    ></i>
+                  ) : (
+                    <i
+                      className="ri-eye-close-line cursor-pointer"
+                      onClick={() => setVRepeatPass(!vRepeatPass)}
+                    ></i>
+                  )}
+                </div>
               </div>
               {level === "scout" ? (
                 <div className="relative w-full flex flex-col items-start justify-center space-y-2">

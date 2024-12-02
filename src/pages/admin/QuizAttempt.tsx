@@ -31,9 +31,49 @@ const QuizAttempt = () => {
     }
   };
 
+  const rankHierarchy = [
+    "unranked",
+    "explorer",
+    "pathfinder",
+    "outdoorsman",
+    "venturer",
+    "eagle",
+  ];
   const getScoutDetails = (userId: string) => {
     return scouts.find((scout: any) => scout._id === userId);
   };
+
+  const getNextRank = (currentRank: string, status: string) => {
+    if (currentRank === "explorer" && status === "pending") {
+      return "explorer"; // Stay as explorer if pending
+    }
+    const currentIndex = rankHierarchy.indexOf(currentRank);
+    return currentIndex !== -1 && currentIndex + 1 < rankHierarchy.length
+      ? rankHierarchy[currentIndex + 1]
+      : null;
+  };
+
+  const filteredQuizAttempts = quizAttempts.filter((quiz: any) => {
+    const scout = getScoutDetails(quiz.userId) as any;
+    if (!scout) {
+      console.log("Scout not found for quiz:", quiz);
+      return false;
+    }
+
+    const { rank, status } = scout.userRank[0] || {};
+    const nextRank = getNextRank(rank, status);
+
+    // Log the next rank for the current scout
+    console.log(
+      `Scout ID: ${scout._id}, Name: ${scout.name}, Current Rank: ${rank}, Status: ${status}, Next Rank: ${nextRank}`
+    );
+
+    return (
+      quiz.userId === scout._id && quiz.attempts[0].question.rank === nextRank
+    );
+  });
+
+  console.log("Filtered Quiz Attempts:", filteredQuizAttempts);
 
   return (
     <>
@@ -51,6 +91,9 @@ const QuizAttempt = () => {
           <div className="w-full flex flex-col items-center justify-center space-y-6">
             {quizAttempts.map((quiz: any, index: any) => {
               const scout = getScoutDetails(quiz.userId) as any;
+              const isFiltered = filteredQuizAttempts.some(
+                (filteredQuiz: any) => filteredQuiz.rank === quiz.rank
+              );
 
               return (
                 <div
@@ -62,19 +105,38 @@ const QuizAttempt = () => {
                       #{quiz.userId}
                     </p>
                     <div className="w-1/2 flex flex-row items-end justify-end space-x-4">
-                      <i
-                        className="ri-calendar-line text-md cursor-pointer"
-                        onClick={() => {
-                          setAddForm(true);
-                          setRank(quiz.attempts[0].question.rank);
-                          setUserId(quiz.userId);
-                        }}
-                      ></i>
+                      {isFiltered && (
+                        <i
+                          className={`ri-calendar-line text-md ${
+                            scout && scout.userRank[0]?.rank === "eagle"
+                              ? "cursor-not-allowed text-gray-400"
+                              : "cursor-pointer"
+                          }`}
+                          onClick={() => {
+                            if (scout && scout.userRank[0]?.rank !== "eagle") {
+                              setAddForm(true);
+                              setRank(quiz.attempts[0].question.rank);
+                              setUserId(quiz.userId);
+                            }
+                          }}
+                        ></i>
+                      )}
                     </div>
                   </div>
 
-                  <div className="w-full flex flex-row justify-between items-center">
-                    <div className="w-1/2 flex flex-col truncate items-start justify-center">
+                  <div className="w-full flex flex-col justify-between items-center">
+                    <div className="w-full flex items-center justify-start pb-4">
+                      {scout ? (
+                        <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                          <img
+                            src={`http://localhost:8080/api/images/${scout.image}`}
+                            alt=""
+                            className="w-full h-full object-cover object-center"
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="w-full flex flex-col truncate items-start justify-center">
                       <p className="text-xs font-semibold uppercase">
                         {scout ? scout.name : "user not found"}
                       </p>

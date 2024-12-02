@@ -44,7 +44,7 @@ const Outdoorsman = () => {
         <div className="w-full lg:w-3/6 flex flex-col items-center justify-center space-y-8">
           <div className="w-full flex flex-row items-center justify-between">
             <div className="w-3/4 flex flex-col items-start justify-center">
-              <p className="text-md font-semibold">Outdoorsman Examination</p>
+              <p className="text-md font-semibold">Venturer Examination</p>
               <p className="text-xs font-normal text-[#999999]">
                 create, add or delete
               </p>

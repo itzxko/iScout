@@ -21,8 +21,10 @@ const AttendanceForm = ({
   const [selectedCamp, setSelectedCamp] = useState("");
   const [attendanceId, setAttendanceId] = useState("");
   const [image, setImage] = useState("");
+  const [scouts, setScouts] = useState([]);
 
   useEffect(() => {
+    getScouts();
     getAttendance();
   }, []);
 
@@ -51,6 +53,24 @@ const AttendanceForm = ({
     } catch (error: any) {
       console.log(error);
     }
+  };
+
+  const getScouts = async () => {
+    try {
+      let url = `http://localhost:8080/api/users`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        setScouts(response.data.users);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const getScoutDetails = (userId: string) => {
+    return scouts.find((scout: any) => scout._id === userId);
   };
 
   return (
@@ -84,27 +104,45 @@ const AttendanceForm = ({
 
             <div className="w-full flex flex-col items-start justify-center space-y-2">
               <p className="text-xs font-semibold">Attendees:</p>
-              {attendance.map((user: any) => (
-                <div
-                  className="w-full flex flex-row items-center justify-between bg-[#EBEBEB] p-4 rounded-xl mb-2 shadow"
-                  key={user.userId}
-                >
-                  <div>
-                    <p className="text-xs font-semibold uppercase">
-                      {user.userDetails.name}
-                    </p>
-                    <p className="text-xs font-normal text-[#6E6E6E]">
-                      Status: {user.status}
-                    </p>
-                    <p className="text-xs font-normal text-[#6E6E6E]">
-                      Leader: {user.isLeader ? "Yes" : "No"}
-                    </p>{" "}
-                    <p className="text-xs font-normal text-[#6E6E6E]">
-                      School: {user.userDetails.additionalDetails.school}
-                    </p>
+              {attendance.map((user: any) => {
+                const scout = getScoutDetails(user.userId) as any;
+
+                return (
+                  <div
+                    className="w-full flex flex-row items-center justify-between bg-[#EBEBEB] p-4 rounded-xl mb-2 shadow"
+                    key={user.userId}
+                  >
+                    <div>
+                      {scout ? (
+                        <div className="w-full flex items-center justify-start pb-4">
+                          <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                            <img
+                              src={`http://localhost:8080/api/images/${scout.image}`}
+                              alt=""
+                              className="w-full h-full object-cover object-center"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+                      <p className="text-xs font-semibold uppercase">
+                        {user.userDetails.name}
+                      </p>
+                      <p className="text-xs font-normal text-[#6E6E6E]">
+                        Status: {user.status}
+                      </p>
+                      <p className="text-xs font-normal text-[#6E6E6E]">
+                        Leader: {user.isLeader ? "Yes" : "No"}
+                      </p>{" "}
+                      <p className="text-xs font-normal text-[#6E6E6E]">
+                        School: {user.userDetails.additionalDetails.school}
+                      </p>
+                      <p className="text-xs font-normal text-[#6E6E6E] uppercase">
+                        S/N: #{user.userDetails.additionalDetails.scoutNumber}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             {attendance.length > 0 ? (
               <div

@@ -21,6 +21,7 @@ const UpdateForm = ({
   const [message, setMessage] = useState("");
   const [campId, setCampId] = useState("");
   const [image, setImage] = useState("");
+  const [scouts, setScouts] = useState([]);
 
   const getCampAttendance = async () => {
     if (attendanceId) {
@@ -60,6 +61,7 @@ const UpdateForm = ({
   };
 
   useEffect(() => {
+    getScouts();
     getCampAttendance();
   }, []);
 
@@ -82,6 +84,24 @@ const UpdateForm = ({
       setModal(true);
       setError(true);
     }
+  };
+
+  const getScouts = async () => {
+    try {
+      let url = `http://localhost:8080/api/users`;
+
+      let response = await axios.get(url);
+
+      if (response.data.success) {
+        setScouts(response.data.users);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const getScoutDetails = (userId: string) => {
+    return scouts.find((scout: any) => scout._id === userId);
   };
 
   return (
@@ -115,37 +135,65 @@ const UpdateForm = ({
             </div>
             <div className="w-full flex flex-col items-start justify-center space-y-2">
               <p className="text-xs font-semibold">Scout Attendees: </p>
-              {attendance.map((user) => (
-                <div
-                  className="w-full flex flex-row items-center justify-between bg-[#EBEBEB] p-4 rounded-xl shadow"
-                  key={user.userId}
-                >
-                  <div>
-                    <p className="text-xs font-semibold uppercase">
-                      {user.userId}
-                    </p>
+              {attendance.map((user) => {
+                const scout = getScoutDetails(user.userId) as any;
 
-                    <p className="text-xs font-normal text-[#6E6E6E]">
-                      Leader: {user.isLeader ? "Yes" : "No"}
-                    </p>
-                    <p className="text-xs font-normal text-[#6E6E6E]">
-                      Status:
-                      <select
-                        className="bg-white border border-gray-300 text-xs p-1 rounded outline-none"
-                        value={user.status}
-                        onChange={(e) => {
-                          if (user.status !== e.target.value) {
-                            updateStatus(user.userId, e.target.value);
-                          }
-                        }}
-                      >
-                        <option value="present">Present</option>
-                        <option value="absent">Absent</option>
-                      </select>
-                    </p>
+                return (
+                  <div
+                    className="w-full flex flex-row items-center justify-between bg-[#EBEBEB] p-4 rounded-xl shadow"
+                    key={user.userId}
+                  >
+                    <div>
+                      {scout ? (
+                        <div className="w-full flex items-center justify-start pb-4">
+                          <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                            <img
+                              src={`http://localhost:8080/api/images/${scout.image}`}
+                              alt=""
+                              className="w-full h-full object-cover object-center"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+                      <p className="text-xs font-semibold uppercase">
+                        {scout ? scout.name : "Not Found"}
+                      </p>
+
+                      <p className="text-xs font-normal text-[#6E6E6E]">
+                        Leader: {user.isLeader ? "Yes" : "No"}
+                      </p>
+                      <p className="text-xs font-normal text-[#6E6E6E]">
+                        {`School:
+                        ${
+                          scout ? scout.additionalDetails.school : "No School"
+                        }`}
+                      </p>
+                      <p className="text-xs font-normal text-[#6E6E6E]">
+                        {`S/N: #${
+                          scout
+                            ? scout.additionalDetails.scoutNumber
+                            : "Not Found"
+                        }`}
+                      </p>
+                      <p className="text-xs font-normal text-[#6E6E6E]">
+                        Status:
+                        <select
+                          className="bg-white border border-gray-300 text-xs p-1 rounded outline-none"
+                          value={user.status}
+                          onChange={(e) => {
+                            if (user.status !== e.target.value) {
+                              updateStatus(user.userId, e.target.value);
+                            }
+                          }}
+                        >
+                          <option value="present">Present</option>
+                          <option value="absent">Absent</option>
+                        </select>
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <div
               className="w-full flex items-center justify-center py-3 bg-gradient-to-tr from-[#466600] to-[#699900] rounded-xl cursor-pointer"

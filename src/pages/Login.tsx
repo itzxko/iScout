@@ -22,6 +22,7 @@ const Register = () => {
     isAuthenticated,
     setIsAuthenticated,
   } = useAuth();
+  const [vPassword, setVPassword] = useState(false);
 
   const onLogin = async () => {
     setLoading(true);
@@ -96,13 +97,26 @@ const Register = () => {
               </div>
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 <p className="text-xs font-normal">Password</p>
-                <input
-                  type="password"
-                  className="w-full outline-none border-none text-xs font-normal px-4 py-3 bg-[#E8E8E8] rounded-md"
-                  placeholder="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="w-full flex flex-row items-center justify-between px-4 py-3 bg-[#E8E8E8] rounded-md gap-2">
+                  <input
+                    type={!vPassword ? "password" : "text"}
+                    className="w-full outline-none border-none text-xs font-normal  bg-[#E8E8E8]"
+                    placeholder="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  {!vPassword ? (
+                    <i
+                      className="ri-eye-line cursor-pointer"
+                      onClick={() => setVPassword(!vPassword)}
+                    ></i>
+                  ) : (
+                    <i
+                      className="ri-eye-close-line cursor-pointer"
+                      onClick={() => setVPassword(!vPassword)}
+                    ></i>
+                  )}
+                </div>
               </div>
             </div>
 

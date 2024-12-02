@@ -173,9 +173,15 @@ const AddForm = ({
                   onClick={() => handleUserClick(scout)}
                 >
                   <div className="w-full flex flex-row items-center justify-between">
-                    <p className="w-1/2 truncate text-xs font-normal uppercase ">
-                      #{scout._id}
-                    </p>
+                    <div className="w-full flex items-center justify-start pb-4">
+                      <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                        <img
+                          src={`http://localhost:8080/api/images/${scout.image}`}
+                          alt=""
+                          className="w-full h-full object-cover object-center"
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className="w-full flex flex-row justify-between items-center">
                     <div className="w-3/4 flex flex-col truncate items-start justify-center">
@@ -186,7 +192,7 @@ const AddForm = ({
                         School: {scout.additionalDetails.school}
                       </p>
                       <p className="text-xs font-normal capitalize w-full truncate">
-                        S/N: {scout.additionalDetails.scoutNumber}
+                        S/N: #{scout.additionalDetails.scoutNumber}
                       </p>
                     </div>
                   </div>

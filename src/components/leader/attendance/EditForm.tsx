@@ -119,9 +119,9 @@ const EditForm = ({
         <div className="flex w-full items-start justify-center">
           <div className="w-full lg:w-2/6 bg-white rounded-xl flex flex-col items-center justify-center space-y-6 p-6">
             <div className="relative w-full flex flex-col items-center justify-center">
-              <p className="text-md font-semibold">Add Attendees</p>
+              <p className="text-md font-semibold">Edit Attendees</p>
               <p className="text-xs font-normal text-[#6E6E6E]">
-                Add scout attendees for a specific camp
+                Edit scout attendees for a specific camp
               </p>
               <div className="absolute right-0 top-0">
                 <i
@@ -171,9 +171,15 @@ const EditForm = ({
                   onClick={() => handleUserClick(scout)}
                 >
                   <div className="w-full flex flex-row items-center justify-between">
-                    <p className="w-1/2 truncate text-xs font-normal uppercase ">
-                      #{scout._id}
-                    </p>
+                    <div className="w-full flex items-center justify-start pb-4">
+                      <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                        <img
+                          src={`http://localhost:8080/api/images/${scout.image}`}
+                          alt=""
+                          className="w-full h-full object-cover object-center"
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className="w-full flex flex-row justify-between items-center">
                     <div className="w-3/4 flex flex-col truncate items-start justify-center">
@@ -184,7 +190,7 @@ const EditForm = ({
                         School: {scout.additionalDetails.school}
                       </p>
                       <p className="text-xs font-normal capitalize w-full truncate">
-                        S/N: {scout.additionalDetails.scoutNumber}
+                        S/N: #{scout.additionalDetails.scoutNumber}
                       </p>
                     </div>
                   </div>
@@ -196,7 +202,7 @@ const EditForm = ({
               className="w-full py-3 rounded-xl bg-gradient-to-tr from-[#466600] to-[#699900] flex items-center justify-center cursor-pointer"
               onClick={updateAttendance}
             >
-              <p className="text-xs font-normal text-white">Add</p>
+              <p className="text-xs font-normal text-white">Update</p>
             </div>
           </div>
         </div>

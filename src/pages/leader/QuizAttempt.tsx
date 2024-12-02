@@ -20,7 +20,7 @@ const QuizAttempt = () => {
   const getScouts = async () => {
     await getSchool();
 
-    if (school) {
+    if (school !== "") {
       try {
         let url = `http://localhost:8080/api/users?userLevel=scout&school=${school}`;
 
@@ -57,13 +57,55 @@ const QuizAttempt = () => {
     }
   };
 
+  console.log(scouts);
+
   const getScoutDetails = (userId: string) => {
     return scouts.find((scout: any) => scout._id === userId);
   };
 
-  const filteredQuizAttempts = quizAttempts.filter((quiz: any) =>
-    scouts.some((scout: any) => scout._id === quiz.userId)
-  );
+  const rankHierarchy = [
+    "unranked",
+    "explorer",
+    "pathfinder",
+    "outdoorsman",
+    "venturer",
+    "eagle",
+  ];
+
+  const getNextRank = (currentRank: string, status: string) => {
+    if (currentRank === "explorer" && status === "pending") {
+      return "explorer"; // Stay as explorer if pending
+    }
+    const currentIndex = rankHierarchy.indexOf(currentRank);
+    return currentIndex !== -1 && currentIndex + 1 < rankHierarchy.length
+      ? rankHierarchy[currentIndex + 1]
+      : null;
+  };
+
+  const filteredQuizAttempts = quizAttempts.filter((quiz: any) => {
+    const scout = getScoutDetails(quiz.userId) as any;
+    if (!scout) {
+      console.log("Scout not found for quiz:", quiz);
+      return false;
+    }
+
+    const { rank, status } = scout.userRank[0] || {};
+    const nextRank = getNextRank(rank, status);
+
+    console.log("Filtering Quiz: ", {
+      scout,
+      rank,
+      status,
+      nextRank,
+      quizRank: quiz.attempts[0].question.rank,
+    });
+
+    return (
+      quiz.userId === scout._id && quiz.attempts[0].question.rank === nextRank
+    );
+  });
+
+  console.log("Filtered Quiz Attempts:", filteredQuizAttempts);
 
   return (
     <>
@@ -79,8 +121,15 @@ const QuizAttempt = () => {
             </div>
           </div>
           <div className="w-full flex flex-col items-center justify-center space-y-6">
-            {filteredQuizAttempts.map((quiz: any, index: any) => {
+            {quizAttempts.map((quiz: any, index: any) => {
               const scout = getScoutDetails(quiz.userId) as any;
+              if (!scout || scout._id !== quiz.userId) {
+                return null; // Return nothing if the IDs do not match
+              }
+
+              const isFiltered = filteredQuizAttempts.some(
+                (filteredQuiz: any) => filteredQuiz.rank === quiz.rank
+              );
 
               return (
                 <div
@@ -92,19 +141,38 @@ const QuizAttempt = () => {
                       #{quiz.userId}
                     </p>
                     <div className="w-1/2 flex flex-row items-end justify-end space-x-4">
-                      <i
-                        className="ri-calendar-line text-md cursor-pointer"
-                        onClick={() => {
-                          setAddForm(true);
-                          setRank(quiz.attempts[0].question.rank);
-                          setUserId(quiz.userId);
-                        }}
-                      ></i>
+                      {isFiltered && (
+                        <i
+                          className={`ri-calendar-line text-md ${
+                            scout && scout.userRank[0]?.rank === "eagle"
+                              ? "cursor-not-allowed text-gray-400"
+                              : "cursor-pointer"
+                          }`}
+                          onClick={() => {
+                            if (scout && scout.userRank[0]?.rank !== "eagle") {
+                              setAddForm(true);
+                              setRank(quiz.attempts[0].question.rank);
+                              setUserId(quiz.userId);
+                            }
+                          }}
+                        ></i>
+                      )}
                     </div>
                   </div>
 
-                  <div className="w-full flex flex-row justify-between items-center">
-                    <div className="w-1/2 flex flex-col truncate items-start justify-center">
+                  <div className="w-full flex flex-col justify-between items-center">
+                    <div className="w-full flex items-center justify-start pb-4">
+                      {scout ? (
+                        <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                          <img
+                            src={`http://localhost:8080/api/images/${scout.image}`}
+                            alt=""
+                            className="w-full h-full object-cover object-center"
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="w-full flex flex-col truncate items-start justify-center">
                       <p className="text-xs font-semibold uppercase">
                         {scout ? scout.name : "user not found"}
                       </p>

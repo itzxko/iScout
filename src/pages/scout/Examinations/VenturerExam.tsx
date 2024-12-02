@@ -94,7 +94,7 @@ const EagleExam = () => {
       <div className="w-full flex flex-col items-center justify-center py-12 px-4 font-host-grotesk">
         <div className="w-full lg:w-3/6 flex flex-col items-center justify-center space-y-8">
           <div className="w-full flex flex-col items-center justify-center">
-            <p className="text-md font-semibold">Eagle Examination</p>
+            <p className="text-md font-semibold">Venturer Examination</p>
             <p className="text-xs font-normal text-[#999999]">
               Select the corresponding letter of the correct answer
             </p>

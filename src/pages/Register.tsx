@@ -19,6 +19,8 @@ const Register = () => {
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [vPassword, setVPassword] = useState(false);
+  const [vRepeatPass, setVRepeatPass] = useState(false);
 
   //dropdown
   const [openLevel, setOpenLevel] = useState(false);
@@ -76,6 +78,10 @@ const Register = () => {
               setIsError(false);
             }
           }
+        } else {
+          setVisibleModal(true);
+          setIsError(false);
+          setMessage(response.data.success);
         }
       } else {
         setVisibleModal(true);
@@ -83,7 +89,8 @@ const Register = () => {
         setMessage("passwords don't match");
       }
     } catch (error: any) {
-      console.log(error);
+      setVisibleModal(true);
+      setMessage(error.response.data.error);
       setIsError(true);
     } finally {
       setLoading(false);
@@ -106,7 +113,7 @@ const Register = () => {
               Login
             </Link>
           </div>
-          <div className="flex flex-col space-y-8 items-center justify-center w-[340px] p-6 rounded-xl bg-[#FCFCFC]">
+          <div className="flex flex-col space-y-8 items-center justify-center w-[360px] p-6 rounded-xl bg-[#FCFCFC]">
             <div className="w-full flex flex-col items-center justify-center">
               <p className="text-sm font-semibold">Register Account</p>
               <p className="text-xs font-normal text-[#999999]">
@@ -156,23 +163,49 @@ const Register = () => {
               </div>
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 <p className="text-xs font-normal">Password</p>
-                <input
-                  type="password"
-                  className="w-full outline-none border-none text-xs font-normal px-4 py-3 bg-[#E8E8E8] rounded-md"
-                  placeholder="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="w-full flex flex-row items-center justify-between px-4 py-3 bg-[#E8E8E8] rounded-md gap-2">
+                  <input
+                    type={!vPassword ? "password" : "text"}
+                    className="w-full outline-none border-none text-xs font-normal  bg-[#E8E8E8]"
+                    placeholder="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  {!vPassword ? (
+                    <i
+                      className="ri-eye-line cursor-pointer"
+                      onClick={() => setVPassword(!vPassword)}
+                    ></i>
+                  ) : (
+                    <i
+                      className="ri-eye-close-line cursor-pointer"
+                      onClick={() => setVPassword(!vPassword)}
+                    ></i>
+                  )}
+                </div>
               </div>
               <div className="w-full flex flex-col items-start justify-center space-y-2">
                 <p className="text-xs font-normal">Re-enter Password</p>
-                <input
-                  type="password"
-                  className="w-full outline-none border-none text-xs font-normal px-4 py-3 bg-[#E8E8E8] rounded-md"
-                  placeholder="re-enter password"
-                  disabled={password === ""}
-                  onChange={handleConfirmPasswordChange}
-                />
+                <div className="w-full flex flex-row items-center justify-between px-4 py-3 bg-[#E8E8E8] rounded-md gap-2">
+                  <input
+                    type={!vRepeatPass ? "password" : "text"}
+                    className="w-full outline-none border-none text-xs font-normal  bg-[#E8E8E8]"
+                    placeholder="password"
+                    disabled={password === ""}
+                    onChange={handleConfirmPasswordChange}
+                  />
+                  {!vRepeatPass ? (
+                    <i
+                      className="ri-eye-line cursor-pointer"
+                      onClick={() => setVRepeatPass(!vRepeatPass)}
+                    ></i>
+                  ) : (
+                    <i
+                      className="ri-eye-close-line cursor-pointer"
+                      onClick={() => setVRepeatPass(!vRepeatPass)}
+                    ></i>
+                  )}
+                </div>
               </div>
               {level === "scout" ? (
                 <div className="relative w-full flex flex-col items-start justify-center space-y-2">
