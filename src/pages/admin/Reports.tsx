@@ -49,7 +49,7 @@ const Reports = () => {
               </p>
             </div>
           </div>
-          <div className="w-full flex flex-col items-center justify-center">
+          <div className="w-full flex flex-col items-center justify-center space-y-12">
             {report.map((report: any) => (
               <div className="w-full flex flex-col items-center justify-center space-y-4">
                 <div className="w-full flex flex-row items-center justify-start">
