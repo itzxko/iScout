@@ -148,7 +148,7 @@ const OutdoorsmanExam = () => {
         <Modal
           onClose={() => {
             if (!error) {
-              navigate("/scout/badges/explorer");
+              navigate("/scout/account");
             }
             setModal(false);
           }}

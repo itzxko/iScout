@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
 import axios from "axios";
 import Logo from "../../assets/iScout_Logo.png";
+import NotifModal from "../NotifModal";
 
 const NavigationBar = () => {
   const [openNav, setOpenNav] = useState(false);
@@ -11,6 +12,14 @@ const NavigationBar = () => {
   const location = useLocation();
   const { isAuthenticated, onLogout } = useAuth();
   const [rank, setRank] = useState("");
+
+  const [openNotif, setOpenNotif] = useState(false);
+  const [notifs, setNotifs] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [readForm, setReadForm] = useState(false);
+  const [rankId, setRankId] = useState("");
+  const [userId, setUserId] = useState("");
+  const [notifRank, setNotifRank] = useState("");
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -65,9 +74,50 @@ const NavigationBar = () => {
     }
   };
 
+  const getNotifs = async () => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      const currentUser = JSON.parse(user);
+
+      if (currentUser) {
+        try {
+          let url = `http://localhost:8080/api/ranks?userId=${currentUser._id}`;
+
+          let response = await axios.get(url);
+
+          if (response.data.success) {
+            setNotifs(response.data.allRankNotifications);
+            setRankId(response.data.alluserRanks[0]._id);
+            setUserId(response.data.alluserRanks[0].userId);
+          }
+        } catch (error: any) {
+          console.log(error);
+        }
+      }
+    }
+  };
+
+  const getUnreadCount = () => {
+    // Filter unread notifications and count them
+    const unread = notifs.filter(
+      (notif: any) => notif.notificationStatus === "unread"
+    );
+
+    setUnreadCount(unread.length); // Set the count of unread notifications
+  };
+
+  useEffect(() => {
+    getUnreadCount();
+  }, [notifs]);
+
+  useEffect(() => {
+    getNotifs();
+  }, []);
+
   useEffect(() => {
     getRank();
-    console.log(rank);
+    // console.log(notifs);
   }, [rank]);
 
   return (
@@ -180,6 +230,53 @@ const NavigationBar = () => {
                   </div>
                 </div>
 
+                <div className="relative flex items-center justify-center cursor-pointer">
+                  <i
+                    className="ri-notification-4-line"
+                    onClick={() => setOpenNotif(!openNotif)}
+                  ></i>
+                  <p className="text-xs font-semibold text-[#699900]">
+                    {unreadCount}
+                  </p>
+                  {openNotif ? (
+                    <div className="w-[60vw] lg:w-[20vw] max-h-[360px] overflow-y-auto z-[2] absolute top-[100%] right-0 bg-[#FCFCFC] rounded-xl overflow-hidden shadow-xl shadow-black/10 scrollbar-hide">
+                      {notifs.map((notif: any, index: any) => (
+                        <div
+                          className={`${
+                            notif.notificationStatus === "unread"
+                              ? "bg-[#EDEDED]"
+                              : "bg-[#FCFCFC]"
+                          } w-full flex flex-col flex-wrap items-center justify-center space-y-4`}
+                          key={notif.rank}
+                          onClick={
+                            notif.notificationStatus === "unread"
+                              ? () => {
+                                  setReadForm(true);
+                                  setNotifRank(notif.rank);
+                                }
+                              : undefined
+                          }
+                        >
+                          <div className="w-full flex flex-wrap items-center justify-start px-4 pt-4">
+                            <p className="text-xs font-normal uppercase text-[#6E6E6E] w-full">
+                              {notif.notificationStatus}
+                            </p>
+                          </div>
+                          <div className="w-full flex flex-wrap items-center justify-center px-4 pb-4">
+                            <p className="text-xs font-normal w-full">
+                              Congratulations, your Rank Review has been
+                              approved
+                            </p>
+                            <p className="text-xs font-semibold w-full uppercase">
+                              New Rank: {notif.rank}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+
                 <div
                   className="px-4 py-1.5 rounded-lg bg-black cursor-pointer "
                   onClick={onLogout}
@@ -268,6 +365,18 @@ const NavigationBar = () => {
             </Link>
           </div>
         </div>
+      )}
+
+      {readForm && (
+        <NotifModal
+          userId={userId}
+          rank={notifRank}
+          rankId={rankId}
+          onClose={() => {
+            setReadForm(false);
+            getNotifs();
+          }}
+        />
       )}
     </>
   );

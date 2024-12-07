@@ -148,7 +148,7 @@ const EagleExam = () => {
         <Modal
           onClose={() => {
             if (!error) {
-              navigate("/scout/home");
+              navigate("/scout/account");
             }
             setModal(false);
           }}
