@@ -96,7 +96,7 @@ const Account = () => {
                 BOY SCOUTS OF THE PHILIPPINES
               </p>
               <p className="text-xs font-normal text-white/50">
-                Valid Until: {formattedDate}
+                Membership Date: {formattedDate}
               </p>
               <div
                 className="px-4 py-2 rounded-md bg-gradient-to-tr from-[#466600] to-[#699900] cursor-pointer"
