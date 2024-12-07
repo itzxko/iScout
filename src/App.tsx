@@ -45,6 +45,8 @@ import LeaderQuizAttempt from "./pages/leader/QuizAttempt";
 import Recommendations from "./pages/admin/Recommendations";
 import Reports from "./pages/admin/Reports";
 import { ReportsProvider } from "./context/ReportsProvider";
+import LeaderRecommendations from "./pages/leader/Recommendations";
+import LeaderReports from "./pages/leader/Reports";
 
 const App = () => {
   return (
@@ -183,6 +185,14 @@ const App = () => {
                           <Route
                             path="/leader/quiz-attempts"
                             element={<LeaderQuizAttempt />}
+                          />
+                          <Route
+                            path="/leader/recommendations"
+                            element={<LeaderRecommendations />}
+                          />
+                          <Route
+                            path="/leader/reports"
+                            element={<LeaderReports />}
                           />
                         </Routes>
                       </ReportsProvider>

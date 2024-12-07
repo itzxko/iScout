@@ -4,6 +4,12 @@ import Man from "../../assets/Man.jpg";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import EditUser from "../../components/scout/account/EditUser";
+import Explorer from "../../assets/badge/Explorer.jpg";
+import Pathfinder from "../../assets/badge/pathfinder.jpg";
+import Outdoorsman from "../../assets/badge/outdoorsman.jpg";
+import Venturer from "../../assets/badge/venturer.jpg";
+import Eagle from "../../assets/badge/eagle.jpg";
+import { Path } from "leaflet";
 
 const Account = () => {
   const { onLogout, user } = useAuth();
@@ -13,7 +19,7 @@ const Account = () => {
   const [email, setEmail] = useState("");
   const [school, setSchool] = useState("");
   const [scoutNumber, setScoutNumber] = useState("");
-  const [rank, setRank] = useState("explorer");
+  const [rank, setRank] = useState("");
   const [membershipDate, setMembershipDate] = useState<Date | null>(null);
   const [editProfile, setEditProfile] = useState(false);
   const [userId, setUserId] = useState("");
@@ -45,6 +51,7 @@ const Account = () => {
                 setScoutNumber(
                   response.data.user.additionalDetails.scoutNumber
                 );
+                setRank(response.data.user.userRank[0].rank);
                 setMembershipDate(
                   response.data.user.additionalDetails.dateOfMembership
                 );
@@ -100,7 +107,7 @@ const Account = () => {
             </div>
           </div>
 
-          <div className="w-full flex flex-col items-start justify-center space-y-6">
+          <div className="w-full flex flex-col items-center justify-start space-y-4">
             <div className="w-full flex flex-col items-start justify-center space-y-2">
               <p className="text-sm lg:text-xl font-normal text-white uppercase truncate">
                 {username}
@@ -109,12 +116,44 @@ const Account = () => {
                 Scout Number: {scoutNumber}
               </p>
               <p className="text-xs font-normal text-white/50 uppercase truncate">
-                School: {school}
+                Institution: {school}
               </p>
               <p className="text-xs font-normal text-white/50 uppercase truncate">
                 Rank: {rank}
               </p>
             </div>
+            {/* badges */}
+            {rank === "explorer" ? (
+              <div className="w-full flex flex-row items-center justify-end space-x-2">
+                <img src={Explorer} alt="" className="w-[80px]" />
+              </div>
+            ) : rank === "pathfinder" ? (
+              <div className="w-full flex flex-row items-center justify-end space-x-2">
+                <img src={Explorer} alt="" className="w-[80px]" />
+                <img src={Pathfinder} alt="" className="w-[80px]" />
+              </div>
+            ) : rank === "outdoorsman" ? (
+              <div className="w-full flex flex-row items-center justify-end space-x-2">
+                <img src={Explorer} alt="" className="w-[80px]" />
+                <img src={Pathfinder} alt="" className="w-[80px]" />
+                <img src={Outdoorsman} alt="" className="w-[80px]" />
+              </div>
+            ) : rank === "venturer" ? (
+              <div className="w-full flex flex-row items-center justify-end space-x-2">
+                <img src={Explorer} alt="" className="w-[80px]" />
+                <img src={Pathfinder} alt="" className="w-[80px]" />
+                <img src={Outdoorsman} alt="" className="w-[80px]" />
+                <img src={Venturer} alt="" className="w-[80px]" />
+              </div>
+            ) : rank === "eagle" ? (
+              <div className="w-full flex flex-row items-center justify-end space-x-2">
+                <img src={Explorer} alt="" className="w-[80px]" />
+                <img src={Pathfinder} alt="" className="w-[80px]" />
+                <img src={Outdoorsman} alt="" className="w-[80px]" />
+                <img src={Venturer} alt="" className="w-[80px]" />
+                <img src={Eagle} alt="" className="h-[58px]" />
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

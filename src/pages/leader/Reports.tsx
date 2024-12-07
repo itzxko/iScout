@@ -1,17 +1,57 @@
 import React, { useEffect, useState } from "react";
-import NavigationBar from "../../components/admin/NavigationBar";
+import NavigationBar from "../../components/leader/NavigationBar";
 import { useReports } from "../../context/ReportsProvider";
 import axios from "axios";
 import { saveAs } from "file-saver";
 
 const Reports = () => {
-  const { report, getReports } = useReports();
+  const [report, setReport] = useState([]);
   const [scouts, setScouts] = useState([]);
+  const [school, setSchool] = useState("");
 
   useEffect(() => {
-    getReports();
+    getInfo();
+    getSchoolReports();
     getScouts();
-  }, []);
+  }, [school]);
+
+  const getSchoolReports = async () => {
+    if (school) {
+      try {
+        let url = `http://localhost:8080/api/camp-attendance/reports?school=${school}`;
+
+        let response = await axios.get(url);
+
+        if (response.data.success) {
+          setReport(response.data.scoutActivityStatusPerYear);
+        }
+      } catch (error: any) {
+        console.log(error);
+      }
+    }
+  };
+
+  const getInfo = async () => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      const currentUser = JSON.parse(user);
+
+      if (currentUser) {
+        try {
+          let url = `http://localhost:8080/api/users/${currentUser._id}`;
+
+          let response = await axios.get(url);
+
+          if (response.data.success) {
+            setSchool(response.data.user.additionalDetails.school);
+          }
+        } catch (error: any) {
+          console.log(error);
+        }
+      }
+    }
+  };
 
   const getScouts = async () => {
     try {
@@ -42,10 +82,10 @@ const Reports = () => {
     if (user) {
       const currentUser = JSON.parse(user);
 
-      if (currentUser) {
+      if (currentUser && school) {
         try {
           const { data } = await axios.get(
-            `http://localhost:8080/api/camp-attendance/reports?generateScoutPDF=true&printedBy=${currentUser._id}`,
+            `http://localhost:8080/api/camp-attendance/reports?school=${school}&generateScoutPDF=true&printedBy=${currentUser._id}`,
             {
               headers: { "Content-Type": "multipart/form-data" },
               responseType: "arraybuffer",

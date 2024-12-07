@@ -96,7 +96,7 @@ const Account = () => {
                 Scout Number: {scoutNumber}
               </p>
               <p className="text-xs font-normal text-white/50 uppercase truncate">
-                School: {school}
+                Institution: {school}
               </p>
               <p className="text-xs font-normal text-white/50 uppercase truncate">
                 Rank: {rank}

@@ -39,7 +39,9 @@ const Home = () => {
             <div className="w-full h-full bg-gradient-to-tr from-black/90 to-black/25 flex items-center justify-center">
               <div className="w-full lg:w-3/6 flex flex-col items-center justify-center space-y-12 px-6">
                 <div className="w-full lg:w-1/2 flex flex-col items-center justify-center">
-                  <p className="text-xl font-semibold text-[#D2AF26]">iScout</p>
+                  <p className="text-xl font-semibold text-[#D2AF26]">
+                    iScouts
+                  </p>
                   <p className="text-xs font-normal text-white/75 text-center">
                     Embark on an exciting journey with us! Become a Scout and
                     play a vital role in uncovering potential, fostering
@@ -76,7 +78,7 @@ const Home = () => {
 
             <div className="w-full flex flex-col items-center justify-center gap-4">
               <div className="w-full flex items-center justify-start">
-                <p className="text-sm font-semibold">iScout Features</p>
+                <p className="text-sm font-semibold">iScouts Features</p>
               </div>
               <div className="w-full grid grid-cols-1 lg:grid-cols-3 grid-rows-3 lg:grid-rows-1 gap-4">
                 <div className="w-full flex flex-col items-center justify-center space-y-4 rounded-xl min-h-[200px] bg-[#EDEDED] p-6">

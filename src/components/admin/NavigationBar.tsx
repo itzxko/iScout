@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
+import Logo from "../../assets/iScout_Logo.png";
 
 const NavigationBar = () => {
   const [openNav, setOpenNav] = useState(false);
-  const [activeTab, setActiveTab] = useState("iScout");
+  const [activeTab, setActiveTab] = useState("iScouts");
   const location = useLocation();
   const { isAuthenticated, onLogout } = useAuth();
 
@@ -30,7 +31,7 @@ const NavigationBar = () => {
       <div className="w-full flex flex-row items-center justify-center bg-[#FCFCFC] font-host-grotesk border-b border-black/15">
         <div className="w-full lg:w-3/6 px-4 lg:p-0 flex flex-col items-center justify-center">
           <div className="w-full flex flex-row justify-between items-center p-2">
-            <i className="ri-leaf-fill text-[#006A4E]"></i>
+            <img src={Logo} alt="" className="w-[12px]" />
             {isAuthenticated === false ? (
               <div className="hidden lg:flex flex-row space-x-4 items-center justify-center">
                 <Link to={"/"} className="text-xs font-normal cursor-pointer">
@@ -108,7 +109,7 @@ const NavigationBar = () => {
                   </Link>
 
                   <div className="relative flex items-center justify-center px-2 group cursor-pointer">
-                    <p className="text-xs font-normal">Scout Ranks</p>
+                    <p className="text-xs font-normal">Scouts Ranks</p>
 
                     <div className="group-hover:flex w-full hidden flex-col items-center justify-center absolute top-[100%] bg-[#FCFCFC] shadow-xl p-3 space-y-3 rounded-md">
                       <Link

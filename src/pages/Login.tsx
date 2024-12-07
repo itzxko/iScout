@@ -71,7 +71,7 @@ const Register = () => {
               className="flex flex-row items-center justify-center space-x-2"
             >
               <i className="ri-leaf-fill text-white"></i>
-              <p className="text-white text-xs">iScout</p>
+              <p className="text-white text-xs">iScouts</p>
             </Link>
             <Link to={"/register"} className="text-xs font-normal text-white">
               Register

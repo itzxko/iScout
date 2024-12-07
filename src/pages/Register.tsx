@@ -107,7 +107,7 @@ const Register = () => {
               className="flex flex-row items-center justify-center space-x-2"
             >
               <i className="ri-leaf-fill text-white"></i>
-              <p className="text-white text-xs">iScout</p>
+              <p className="text-white text-xs">iScouts</p>
             </Link>
             <Link to={"/login"} className="text-xs font-normal text-white">
               Login
@@ -132,11 +132,11 @@ const Register = () => {
                 />
               </div>
               <div className="w-full flex flex-col items-start justify-center space-y-2">
-                <p className="text-xs font-normal">School</p>
+                <p className="text-xs font-normal">Sponsoring Institution</p>
                 <input
                   type="text"
                   className="w-full outline-none border-none text-xs font-normal px-4 py-3 bg-[#E8E8E8] rounded-md"
-                  placeholder="school"
+                  placeholder="sponsoring institution"
                   value={school}
                   onChange={(e) => setSchool(e.target.value)}
                 />
